@@ -60,8 +60,7 @@
                         {% if type.grouper == "StoreCredit" %}{{ labels.storeCredit }}{% endif %}
                         {% if type.grouper == "DigitalCredit" %}{{ labels.digitalCredit }}{% endif %}
                         {% if type.grouper == "Paypal" %}{{ labels.payPal }}{% endif %}
-                        {% if type.grouper == "PaypalExpress" %}{{ labels.paypalExpress }}{% endif %}
-                   
+                        {% if type.grouper == "PaypalExpress" or type.grouper|lower == "paypalexpressnew" }{{ labels.paypalExpress }}{% endif %}
                 {% endfor %}
             </td>
             <td>{{ model.shippingMethodName }}</td>

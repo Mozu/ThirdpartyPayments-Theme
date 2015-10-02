@@ -12,7 +12,7 @@ define([
     function ($, _, Hypr, Backbone, api, CustomerModels, AddressModels, PaymentMethods, HyprLiveContext) {
 
         var CheckoutStep = Backbone.MozuModel.extend({
-            helpers: ['stepStatus', 'requiresFulfillmentInfo', 'requiresDigitalFulfillmentContact'],  //
+            helpers: ['stepStatus', 'requiresFulfillmentInfo','isAwsCheckout', 'requiresDigitalFulfillmentContact'],  //
             // instead of overriding constructor, we are creating
             // a method that only the CheckoutStepView knows to
             // run, so it can run late enough for the parent
@@ -58,6 +58,10 @@ define([
             requiresFulfillmentInfo: function () {
                 return this.getOrder().get('requiresFulfillmentInfo');
             },
+            isAwsCheckout: function() {
+                var activePayments = this.getOrder().apiModel.getActivePayments();
+                return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });
+            },
             requiresDigitalFulfillmentContact: function () {
                 return this.getOrder().get('requiresDigitalFulfillmentContact');
             },
@@ -66,6 +70,15 @@ define([
             },
             next: function () {
                 if (this.submit()) this.isLoading(true);
+            },
+            cancelStep: function() {
+                var me = this,
+                order = me.getOrder();
+                me.isLoading(true);
+                order.apiModel.get().ensure(function(){
+                    me.isLoading(false);
+                    return me.stepStatus("complete");
+                });
             }
         }),
 
@@ -817,8 +830,10 @@ define([
                     thereAreActivePayments = activePayments.length > 0,
                     paymentTypeIsCard = activePayments && !!_.findWhere(activePayments, { paymentType: 'CreditCard' }),
                     paymentTypeIsPayPal = activePayments && !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }),
+                    paymentTypeIsPayPalNew = activePayments && !!_.findWhere(activePayments, { paymentType: 'PaypalExpressNew' }),
                     balanceNotPositive = this.parent.get('amountRemainingForPayment') <= 0;
 
+                if (this.isAwsCheckout() || paymentTypeIsPayPalNew) return this.stepStatus("complete");
                 if (paymentTypeIsCard && !Hypr.getThemeSetting('isCvvSuppressed')) return this.stepStatus('incomplete'); // initial state for CVV entry
 
                 if (!fulfillmentComplete) return this.stepStatus('new');
@@ -1120,7 +1135,7 @@ define([
                 me.runForAllSteps(function() {
                     this.isLoading(true);
                 });
-                order.trigger('beforerefresh');
+                me.trigger('beforerefresh');
                 // void active payments; if there are none then the promise will resolve immediately
                 return api.all.apply(api, _.map(_.filter(me.apiModel.getActivePayments(), function(payment) {
                     return payment.paymentType !== 'StoreCredit' && payment.paymentType !== 'GiftCard';
@@ -1467,6 +1482,9 @@ define([
                     nonStoreCreditTotal = billingInfo.nonStoreCreditTotal(),
                     requiresFulfillmentInfo = this.get('requiresFulfillmentInfo'),
                     requiresBillingInfo = nonStoreCreditTotal > 0,
+		    currentPayment = this.apiModel.getCurrentPayment();
+
+
                     process = [function() {
                         return order.update({
                             ipAddress: order.get('ipAddress'),
@@ -1485,7 +1503,7 @@ define([
                 this.syncBillingAndCustomerEmail();
                 this.setFulfillmentContactEmail();
 
-                if (nonStoreCreditTotal > 0 && this.validate()) {
+                if (nonStoreCreditTotal > 0 && this.validate() && ((currentPayment.paymentWorkflow !== "PayWithAmazon" && currentPayment.paymentWorkflow !== "PayPalExpressNew") || this.validate().agreeToTerms)) {
                     this.isSubmitting = false;
                     return false;
                 }
