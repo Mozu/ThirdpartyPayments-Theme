@@ -1482,8 +1482,7 @@ define([
                     nonStoreCreditTotal = billingInfo.nonStoreCreditTotal(),
                     requiresFulfillmentInfo = this.get('requiresFulfillmentInfo'),
                     requiresBillingInfo = nonStoreCreditTotal > 0,
-		    currentPayment = this.apiModel.getCurrentPayment();
-
+                    currentPayment = this.apiModel.getCurrentPayment();
 
                     process = [function() {
                         return order.update({
