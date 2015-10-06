@@ -5,9 +5,14 @@
                     <dt>{{ labels.billingEmail }}</dt>
                     <dd>{{ model.billingInfo.billingContact.email }}</dd>
                   {% endif %}
-                  {% if model.billingInfo.paymentType == "StoreCredit" or model.billingInfo.paymentType == "GiftCard" %}
-                  <dt>{{ labels.digitalCreditCode }}</dt>
-                    <dd>{{ model.billingInfo.storeCreditCode }}</dd>
+                  {% if model.billingInfo.paymentType == "StoreCredit" or model.billingInfo.paymentType == "GiftCard" or model.billingInfo.paymentType == "PayWithAmazon"%}
+                   {% if model.billingInfo.paymentType == "PayWithAmazon" %}
+                        <dt>Payment Method</dt>
+                        <dd><img src="../../resources/images/amazonpay60x38.png"/></dd>
+                    {% else %}
+                        <dt>{{ labels.digitalCreditCode }}</dt>
+                        <dd>{{ model.billingInfo.storeCreditCode }}</dd>
+                    {%endif%}    
                     {% else %}
                     <dt>{{ labels.billingName }}</dt>
                     <dd>{{ model.billingInfo.billingContact.firstName }} {{ model.billingInfo.billingContact.lastNameOrSurname }}</dd>

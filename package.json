@@ -1,7 +1,7 @@
 {
   "name": "mozu-core-theme",
   "author": "Volusion, Inc.",
-  "description": "The core storefront theme for Mozu.",
+  "description": "The core storefront theme for Mozu extended with PayWithAmazon feature.",
   "version": "8.0.0",
   "repository": {
     "type": "git",

@@ -1,5 +1,10 @@
 {% with paymentId|default(0) as paymentId %}
 <div class="mz-l-formfieldgroup mz-paymentselector">
+    {% if model.paymentType == "PayWithAmazon" %}
+        <div class="mz-l-formfieldgroup-row mz-l-security-box" >
+                    {{ labels.awsPaymentWarning }}
+        </div>
+    {%endif%}
     <div class="mz-l-formfieldgroup-row mz-paymentselector-option mz-paymentselector-newcreditcard">
         <div class="mz-l-formfieldgroup-cell">
             <input data-mz-value="paymentType" data-mz-new-credit-card id="paymentType-newcreditcard-{{ paymentId }}" name="paymentType" type="radio" class="mz-paymenttype-input" value="CreditCard" {% if model.paymentType == "CreditCard" and not model.usingSavedCard %}checked="true"{% endif %} />
@@ -76,6 +81,11 @@
                                     <img alt="Visa Checkout" class="v-button" role="button"
                                     src="{{pageContext.visaCheckoutButtonUrl}}?size=154&amp;color=neutral"/>
                                 </div>
+                            {% endif %}
+                            {% if name == "paywithamazon" %}
+                                <div class="mz-paymenttype" id="amazonButonPaymentSection">
+                                   
+                                </div>    
                             {% endif %}
                         </div>
                     </div>

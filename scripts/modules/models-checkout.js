@@ -12,7 +12,7 @@ define([
     function ($, _, Hypr, Backbone, api, CustomerModels, AddressModels, PaymentMethods, HyprLiveContext) {
 
         var CheckoutStep = Backbone.MozuModel.extend({
-            helpers: ['stepStatus', 'requiresFulfillmentInfo', 'requiresDigitalFulfillmentContact'],  //
+            helpers: ['stepStatus', 'requiresFulfillmentInfo','isAwsCheckout', 'requiresDigitalFulfillmentContact'],  //
             // instead of overriding constructor, we are creating
             // a method that only the CheckoutStepView knows to
             // run, so it can run late enough for the parent
@@ -58,6 +58,10 @@ define([
             requiresFulfillmentInfo: function () {
                 return this.getOrder().get('requiresFulfillmentInfo');
             },
+            isAwsCheckout: function() {
+                var activePayments = this.getOrder().apiModel.getActivePayments();
+                return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });
+            },
             requiresDigitalFulfillmentContact: function () {
                 return this.getOrder().get('requiresDigitalFulfillmentContact');
             },
@@ -66,6 +70,15 @@ define([
             },
             next: function () {
                 if (this.submit()) this.isLoading(true);
+            },
+            cancelStep: function() {
+                var me = this,
+                order = me.getOrder();
+                me.isLoading(true);
+                order.apiModel.get().ensure(function(){
+                    me.isLoading(false);
+                    return me.stepStatus("complete");
+                });
             }
         }),
 
@@ -819,6 +832,7 @@ define([
                     paymentTypeIsPayPal = activePayments && !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }),
                     balanceNotPositive = this.parent.get('amountRemainingForPayment') <= 0;
 
+                if (this.isAwsCheckout()) return this.stepStatus("complete");
                 if (paymentTypeIsCard && !Hypr.getThemeSetting('isCvvSuppressed')) return this.stepStatus('incomplete'); // initial state for CVV entry
 
                 if (!fulfillmentComplete) return this.stepStatus('new');
@@ -862,7 +876,7 @@ define([
                                 'postalOrZipCode',
                                 'stateOrProvince') : {}
                         }),
-                        card: _.extend(_.pick(obj.card,
+                        card: (obj.card ? _.extend(_.pick(obj.card,
                             'expireMonth',
                             'expireYear',
                             'nameOnCard'),
@@ -870,7 +884,7 @@ define([
                             cardType: obj.card.paymentOrCardType || obj.card.cardType,
                             cardNumber: obj.card.cardNumberPartOrMask || obj.card.cardNumberPart || obj.card.cardNumber,
                             id: obj.card.paymentServiceCardId || obj.card.id
-                        }),
+                        }) : null),
                         check: obj.check || {}
                     };
                 }
@@ -931,6 +945,8 @@ define([
             },
             applyPayment: function () {
                 var self = this, order = this.getOrder();
+                if (this.get("paymentWorkflow") == "PayWithAmazon")
+                    this.unset("paymentWorkflow");
                 if (this.get('paymentType') === 'PaypalExpress') {
                     this.set(this.getPaypalUrls());
                 } else {
@@ -1456,6 +1472,10 @@ define([
             //    }
 
             //},
+            isAwsCheckout: function() {
+                var activePayments = this.apiModel.getActivePayments();
+                return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });
+            },
             submit: function () {
                 var order = this,
                     billingInfo = this.get('billingInfo'),
@@ -1467,6 +1487,7 @@ define([
                     nonStoreCreditTotal = billingInfo.nonStoreCreditTotal(),
                     requiresFulfillmentInfo = this.get('requiresFulfillmentInfo'),
                     requiresBillingInfo = nonStoreCreditTotal > 0,
+                    currentPayment = this.apiModel.getCurrentPayment(),
                     process = [function() {
                         return order.update({
                             ipAddress: order.get('ipAddress'),
@@ -1474,6 +1495,9 @@ define([
                         });
                     }];
 
+                if (this.isAwsCheckout()) {
+                    billingContact.set("address", null);
+                }
                 if (this.isSubmitting) return;
 
                 this.isSubmitting = true;
@@ -1485,7 +1509,7 @@ define([
                 this.syncBillingAndCustomerEmail();
                 this.setFulfillmentContactEmail();
 
-                if (nonStoreCreditTotal > 0 && this.validate()) {
+                if (nonStoreCreditTotal > 0 && this.validate()  && (currentPayment.paymentWorkflow !== "PayWithAmazon" || this.validate().agreeToTerms)) {
                     this.isSubmitting = false;
                     return false;
                 }
