@@ -12,6 +12,9 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
                 me.model.next();
             });
         },
+        cancel: function(){
+            this.model.cancelStep();
+        },
         choose: function () {
             var me = this;
             me.model.choose.apply(me.model, arguments);

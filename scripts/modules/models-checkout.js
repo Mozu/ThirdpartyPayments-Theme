@@ -12,7 +12,7 @@ define([
     function ($, _, Hypr, Backbone, api, CustomerModels, AddressModels, PaymentMethods, HyprLiveContext) {
 
         var CheckoutStep = Backbone.MozuModel.extend({
-            helpers: ['stepStatus', 'requiresFulfillmentInfo','isAwsCheckout', 'requiresDigitalFulfillmentContact'],  //
+            helpers: ['stepStatus', 'requiresFulfillmentInfo','isMozuCheckout', 'requiresDigitalFulfillmentContact'],
             // instead of overriding constructor, we are creating
             // a method that only the CheckoutStepView knows to
             // run, so it can run late enough for the parent
@@ -58,9 +58,12 @@ define([
             requiresFulfillmentInfo: function () {
                 return this.getOrder().get('requiresFulfillmentInfo');
             },
-            isAwsCheckout: function() {
+            isMozuCheckout: function() {
                 var activePayments = this.getOrder().apiModel.getActivePayments();
-                return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });
+                return (activePayments && (!!_.findWhere(activePayments, { paymentType: 'CreditCard' }) || 
+                    !!_.findWhere(activePayments, { paymentType: 'Check' }) || 
+                    !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }) || 
+                    !!_.findWhere(activePayments, { paymentType: 'VisaCheckout' })));
             },
             requiresDigitalFulfillmentContact: function () {
                 return this.getOrder().get('requiresDigitalFulfillmentContact');
@@ -830,10 +833,10 @@ define([
                     thereAreActivePayments = activePayments.length > 0,
                     paymentTypeIsCard = activePayments && !!_.findWhere(activePayments, { paymentType: 'CreditCard' }),
                     paymentTypeIsPayPal = activePayments && !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }),
-                    paymentTypeIsPayPalNew = activePayments && !!_.findWhere(activePayments, { paymentType: 'PaypalExpressNew' }),
+                    paymentTypeIsPayPalNew = activePayments && !!_.findWhere(activePayments, { paymentType: 'PayPalExpress2' }),
                     balanceNotPositive = this.parent.get('amountRemainingForPayment') <= 0;
 
-                if (this.isAwsCheckout() || paymentTypeIsPayPalNew) return this.stepStatus("complete");
+                if (this.isMozuCheckout() || paymentTypeIsPayPalNew) return this.stepStatus("complete");
                 if (paymentTypeIsCard && !Hypr.getThemeSetting('isCvvSuppressed')) return this.stepStatus('incomplete'); // initial state for CVV entry
 
                 if (!fulfillmentComplete) return this.stepStatus('new');
@@ -1471,6 +1474,13 @@ define([
             //    }
 
             //},
+            isMozuCheckout: function() {
+                var activePayments = this.apiModel.getActivePayments();
+                return (activePayments && (!!_.findWhere(activePayments, { paymentType: 'CreditCard' }) || 
+                    !!_.findWhere(activePayments, { paymentType: 'Check' }) || 
+                    !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }) || 
+                    !!_.findWhere(activePayments, { paymentType: 'VisaCheckout' })));
+            },
             submit: function () {
                 var order = this,
                     billingInfo = this.get('billingInfo'),
@@ -1483,6 +1493,10 @@ define([
                     requiresFulfillmentInfo = this.get('requiresFulfillmentInfo'),
                     requiresBillingInfo = nonStoreCreditTotal > 0,
                     currentPayment = this.apiModel.getCurrentPayment();
+                    
+                    if (!this.isMozuCheckout()) {
+                        billingContact.set("address", null);
+                    }
 
                     process = [function() {
                         return order.update({
@@ -1502,7 +1516,7 @@ define([
                 this.syncBillingAndCustomerEmail();
                 this.setFulfillmentContactEmail();
 
-                if (nonStoreCreditTotal > 0 && this.validate() && ((currentPayment.paymentWorkflow !== "PayWithAmazon" && currentPayment.paymentWorkflow !== "PayPalExpressNew") || this.validate().agreeToTerms)) {
+                if (nonStoreCreditTotal > 0 && this.validate() && ((currentPayment.paymentWorkflow !== "PayWithAmazon" && currentPayment.paymentWorkflow !== "PayPalExpress2") || this.validate().agreeToTerms)) {
                     this.isSubmitting = false;
                     return false;
                 }

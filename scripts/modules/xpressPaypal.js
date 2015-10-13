@@ -8,7 +8,7 @@ function($, Api, CartModels, hyprlivecontext, _) {
     window.paypalCheckoutReady = function() {
      
       var siteContext = hyprlivecontext.locals.siteContext,
-          externalPayment = _.findWhere(siteContext.checkoutSettings.externalPaymentWorkflowSettings, {"name" : "PayPalExpressNew"}),
+          externalPayment = _.findWhere(siteContext.checkoutSettings.externalPaymentWorkflowSettings, {"name" : "PayPalExpress2"}),
           merchantAccountId = _.findWhere(externalPayment.credentials, {"apiName" : "merchantAccountId"}),
           environment = _.findWhere(externalPayment.credentials, {"apiName" : "environment"}),
           id = CartModels.Cart.fromCurrent().id,
@@ -21,7 +21,7 @@ function($, Api, CartModels, hyprlivecontext, _) {
 
                 paypal.checkout.initXO();
                 $.ajax({                                          
-                    url: "../paypal/token?id=" + id + "&isCart="+ isCart + (!document.URL.split('?')[1] ? "": "&" + document.URL.split('?')[1]),
+                    url: "../paypal/token?id=" + id + "&isCart="+ isCart + (!document.URL.split('?')[1] ? "": "&" + document.URL.split('?')[1].replace("id="+id,"").replace("&&", "&")),
                     type: "GET",   
                     async: true,
 
