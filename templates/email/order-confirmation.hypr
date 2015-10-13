@@ -36,7 +36,7 @@
                         <b>{{ labels.paymentMethod }}</b>: {{ model.billingInfo.card.paymentOrCardType }} {{ model.billingInfo.card.cardNumberPartOrMask }}
                     {% endif %}
 
-                    {% if model.billingInfo.paymentType == "PaypalExpress" or model.billingInfo.paymentType|lower == "paypalexpressnew"  %}
+                    {% if model.billingInfo.paymentType == "PaypalExpress" or model.billingInfo.paymentType|lower == "paypalexpress2"  %}
                         <b>{{ labels.paymentMethod }}</b>: {{ labels.paypalExpress }}
                     {% endif %}
                 </td>

@@ -36,7 +36,7 @@
 				{% if refund.payment.paymentType == "CreditCard" %}
 					{{ refund.payment.billingInfo.card.paymentOrCardType }} {{ refund.payment.billingInfo.card.cardNumberPartOrMask }}
 				{% else %}
-					{% if refund.payment.paymentType == "PaypalExpress" or refund.payment.paymentType|lower == "paypalexpressnew" %}
+					{% if refund.payment.paymentType == "PaypalExpress" or refund.payment.paymentType|lower == "paypalexpress2" %}
 						{{ labels.payPal }}
 					{% else %}
 						{% if refund.payment.paymentType == "StoreCredit" %}
