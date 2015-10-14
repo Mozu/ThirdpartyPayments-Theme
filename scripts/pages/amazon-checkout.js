@@ -16,6 +16,11 @@ require(["modules/jquery-mozu","modules/backbone-mozu",'modules/editable-view', 
 			});
 			
 		},
+		render: function() {
+			AmazonPay.addAddressWidget();
+			AmazonPay.addWalletWidget();
+			$("#continue").removeAttr("disabled");
+		},
 		setawsOrderData: function(data) {
 			var awsData = { awsReferenceId: data.orderReferenceId, addressAuthorizationToken:$.deparam().access_token};
 			//window.order.addAwsReference(awsData);
@@ -46,5 +51,6 @@ require(["modules/jquery-mozu","modules/backbone-mozu",'modules/editable-view', 
 
 		AmazonPay.addAddressWidget();
 		AmazonPay.addWalletWidget();
+
 	});
 });

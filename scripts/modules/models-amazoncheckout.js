@@ -18,7 +18,7 @@ define([
             },
             applyShippingMethods: function(existingShippingMethodCode) {
                 var me = this;
-                me.isLoading( true);
+                //me.isLoading( true);
                 me.apiModel.getShippingMethods().then(
                     function (methods) {
 
@@ -38,7 +38,7 @@ define([
                         fulfillmentInfo.shippingMethodName = shippingMethod.shippingMethodName;
                         me.apiModel.update({ fulfillmentInfo: fulfillmentInfo}).then(
                             function() {
-                                me.isLoading (false);
+                                //me.isLoading (false);
                                 me.set("fulfillmentInfo", fulfillmentInfo);
                                 me.applyBilling();
                             });
@@ -46,7 +46,7 @@ define([
             },
             applyBilling: function() {
                 var me = this;
-                me.isLoading (true);
+                //me.isLoading (true);
 
                 return api.all.apply(api,_.map(_.filter(me.apiModel.getActivePayments(), function(payment) {
                     return payment.paymentType !== "StoreCredit" && payment.paymentType !== "GiftCard";
@@ -82,7 +82,7 @@ define([
 
                 me.apiCreatePayment(billingInfo).then( function() {
                     me.trigger('awscheckoutcomplete', me.id);
-                    //me.isLoading(false);
+                    me.isLoading(false);
                }, function(err) {
                     me.isLoading(false);
                });
@@ -100,16 +100,19 @@ define([
 
                 me.apiUpdateShippingInfo( fulfillmentInfo ).then(function(result) {
                     me.set("fulfillmentInfo",result.data);
-                    me.isLoading(false);
+                    //me.isLoading(false);
                     if (me.apiModel.data.requiresFulfillmentInfo)
                         me.applyShippingMethods(existingShippingMethodCode);
                     else
                         me.applyBilling();
+                }).catch(function(err) {
+                    onCheckoutError(err);
                 });
             },
              onCheckoutError: function (msg) {
                 var me = this,
                     errorHandled = false;
+                    //me.messages.add(msg || Hypr.getLabel('unknownError'));
                 me.isLoading(false);
                 error = {
                         items: [
