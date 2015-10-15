@@ -105,8 +105,6 @@ define([
                         me.applyShippingMethods(existingShippingMethodCode);
                     else
                         me.applyBilling();
-                }).catch(function(err) {
-                    onCheckoutError(err);
                 });
             },
              onCheckoutError: function (msg) {
