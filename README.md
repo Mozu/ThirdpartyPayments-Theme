@@ -28,6 +28,7 @@ And edits the following files:
 *	`templates/email/order-refund-issued.hypr`
 *	`templates/modules/cart/cart-table.hypr.live`
 *	`templates/modules/checkout/checkout-payment.hypr.live`
+*	`templates/modules/checkout/payment-selector.hypr.live`
 *	`templates/modules/checkout/step-payment-info.hypr.live`
 *	`templates/modules/checkout/step-shipping-address.hypr.live`
 *	`templates/modules/page-header/utility-nav.hypr`
