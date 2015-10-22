@@ -35,7 +35,7 @@ And edits the following files:
 *	`package.json`
 *	`theme.json`
 
-Refer to the [Upgrading to Mozu Core Theme Version 8](#Upgrading-to-Mozu-Core-Theme-Version-8) section below for instructions/best practices for a theme upgrade.
+Refer to the *Upgrading to Mozu Core Theme Version 8* section below for instructions/best practices for a theme upgrade.
 
 ##Additional Resources
 * [Mozu Pay with Amazon Integration Using Arc.js](https://github.com/Mozu/PayWithAmazon) (Application Repo)
@@ -91,4 +91,4 @@ Use the new [Mozu Theme Generator](http://npmjs.com/package/generator-mozu-theme
 
 0. Make any necessary corrections based on visual errors or console errors.
 
-0. Repeat steps 11 and 12 until your theme is free from errors and regressions.
+0. Repeat the previous two steps until your theme is free from errors and regressions.
