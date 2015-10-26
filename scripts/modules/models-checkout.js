@@ -1405,10 +1405,20 @@ define([
                 var billingEmail = this.get('billingInfo.billingContact.email'),
                     customerEmail = this.get('emailAddress') || require.mozuData('user').email;
                 if (!customerEmail) {
-                    this.set('emailAddress', billingEmail);
+                    if(!billingEmail){
+                        this.set('emailAddress', this.get('fulfillmentInfo.fulfillmentContact.email'));
+                    }
+                    else{
+                        this.set('emailAddress', billingEmail);
+                    }
                 }
                 if (!billingEmail) {
-                    this.set('billingInfo.billingContact.email', customerEmail);
+                    if (!customerEmail) {
+                        this.set('billingInfo.billingContact.email', this.get('fulfillmentInfo.fulfillmentContact.email'));
+                    }
+                    else{
+                        this.set('billingInfo.billingContact.email', customerEmail);
+                    }
                 }
             },
             addDigitalCreditToCustomerAccount: function () {
