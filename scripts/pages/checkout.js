@@ -308,7 +308,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
                 clientId: clientId,
                 paymentRequest: {
                     currencyCode: orderModel.get('currencyCode'),
-                    total: "" + orderModel.get('total')
+                    subtotal: "" + orderModel.get('total')
             }
             });
         }
