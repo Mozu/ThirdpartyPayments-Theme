@@ -157,7 +157,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             this.codeEntered = !!this.model.get('digitalCreditCode');
         },
         render: function() {
-            preserveElements(this, ['.v-button'], function() {
+            preserveElements(this, ['.v-button', '.p-button'], function() {
                 CheckoutStepView.prototype.render.apply(this, arguments);
             });
             var status = this.model.stepStatus();
