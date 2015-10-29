@@ -63,7 +63,9 @@ define([
                 return (activePayments && (!!_.findWhere(activePayments, { paymentType: 'CreditCard' }) || 
                     !!_.findWhere(activePayments, { paymentType: 'Check' }) || 
                     !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }) || 
-                    !!_.findWhere(activePayments, { paymentType: 'VisaCheckout' })));
+                    !!_.findWhere(activePayments, { paymentType: 'VisaCheckout' }) ||
+                    !!_.findWhere(activePayments, { paymentType: 'StoreCredit' }) ||
+                    !!_.findWhere(activePayments, { paymentType: 'GiftCard' })));
             },
             requiresDigitalFulfillmentContact: function () {
                 return this.getOrder().get('requiresDigitalFulfillmentContact');
@@ -1513,7 +1515,9 @@ define([
                 return (activePayments && (!!_.findWhere(activePayments, { paymentType: 'CreditCard' }) || 
                     !!_.findWhere(activePayments, { paymentType: 'Check' }) || 
                     !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }) || 
-                    !!_.findWhere(activePayments, { paymentType: 'VisaCheckout' })));
+                    !!_.findWhere(activePayments, { paymentType: 'VisaCheckout' }) ||
+                    !!_.findWhere(activePayments, { paymentType: 'StoreCredit' }) ||
+                    !!_.findWhere(activePayments, { paymentType: 'GiftCard' })));
             },
             submit: function () {
                 var order = this,
