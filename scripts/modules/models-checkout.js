@@ -884,7 +884,7 @@ define([
                                 'postalOrZipCode',
                                 'stateOrProvince') : {}
                         }),
-                        card: _.extend(_.pick(obj.card,
+                        card: (obj.card ? _.extend(_.pick(obj.card,
                             'expireMonth',
                             'expireYear',
                             'nameOnCard'),
@@ -892,7 +892,7 @@ define([
                             cardType: obj.card.paymentOrCardType || obj.card.cardType,
                             cardNumber: obj.card.cardNumberPartOrMask || obj.card.cardNumberPart || obj.card.cardNumber,
                             id: obj.card.paymentServiceCardId || obj.card.id
-                        }),
+                        }) : null),
                         check: obj.check || {}
                     };
                 }
