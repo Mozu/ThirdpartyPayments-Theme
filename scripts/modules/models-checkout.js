@@ -1564,7 +1564,7 @@ define([
                 this.syncBillingAndCustomerEmail();
                 this.setFulfillmentContactEmail();
 
-                if (nonStoreCreditTotal > 0 && this.validate() && ((currentPayment.paymentWorkflow !== "PayWithAmazon" && currentPayment.paymentWorkflow !== "PayPalExpress2") || this.validate().agreeToTerms)) {
+                if (nonStoreCreditTotal > 0 && this.validate() && ( currentPayment.paymentWorkflow !== "PayPalExpress2" || this.validate().agreeToTerms)) {
                     this.isSubmitting = false;
                     return false;
                 }

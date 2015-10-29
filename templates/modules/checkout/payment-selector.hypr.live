@@ -125,11 +125,6 @@
                                     }
                                 </script>
                             {%endif%}
-                            {% if name == "paywithamazon" %}
-                                <div class="mz-paymenttype" id="amazonButonPaymentSection">
-                                   
-                                </div>    
-                            {% endif %}
                         </div>
                     </div>
                 {% endwith %}
