@@ -331,7 +331,7 @@ define([
                 'billingContact.email': {
                     pattern: 'email',
                     msg: Hypr.getLabel('emailMissing')
-                } 
+                }
             },
             dataTypes: {
                 'isSameBillingShippingAddress': Backbone.MozuModel.DataTypes.Boolean,
@@ -348,6 +348,7 @@ define([
               var errorMessage = Hypr.getLabel('paymentTypeMissing');
               if (!value) return errorMessage;
               if ((value === "StoreCredit" || value === "GiftCard") && this.nonStoreCreditTotal() > 0 && !payment) return errorMessage;
+
             },
             helpers: ['acceptsMarketing', 'savedPaymentMethods', 'availableStoreCredits', 'applyingCredit', 'maxCreditAmountToApply',
                 'activeStoreCredits', 'nonStoreCreditTotal', 'activePayments', 'hasSavedCardPayment', 'availableDigitalCredits', 'digitalCreditPaymentTotal', 'isAnonymousShopper', 'visaCheckoutFlowComplete'],
@@ -583,7 +584,8 @@ define([
                                     storeCreditCode: creditCode,
                                     amount: creditAmountToApply
                                 }).then(function (o) {
-                                    order.set(o.data);
+                                    order.get('billingInfo').clear();
+                                    order.set(o.data, { silent: true });
                                     self.trigger('orderPayment', o.data, self);
                                     return o;
                                 });
@@ -919,7 +921,18 @@ define([
                 if (currentPayment) {
                     this.get('card').set('isVisaCheckout', currentPayment.paymentWorkflow.toLowerCase() === 'visacheckout');
                 }
-                var val = this.validate();
+
+                // when we are using the saved card, validation is only to make sure we have one selected.
+                var val = null;
+                if (!order.get('billingInfo.usingSavedCard')) {
+                    val = this.validate();
+
+                // the second condition is to make sure that saved credit card is the operation.
+                } else if (order.get('billingInfo.usingSavedCard') && !this.get('savedPaymentMethodId')) {
+                    var missingSavedCardErrorMsg = Hypr.getLabel('selectASavedCard');
+                    val = { 'card.saved': missingSavedCardErrorMsg };
+                }
+
                 if (this.nonStoreCreditTotal() > 0 && val) {
                     // display errors:
                     var error = {"items":[]};
@@ -973,6 +986,7 @@ define([
                                         modelCard.set('cvv', '***');
                                         // to hide CVV once it has been sent to the paymentservice
                                     }
+
                                     self.markComplete();
                                     break;
                                 case 'PaypalExpress':
@@ -1085,7 +1099,7 @@ define([
                     if (paymentWorkflow) {
                         billingInfo.set('paymentWorkflow', paymentWorkflow);
                         billingInfo.get('card').set({
-                            isCvvOptional: true,
+                            isCvvOptional: Hypr.getThemeSetting('isCvvSuppressed'),
                             paymentWorkflow: paymentWorkflow
                         });
                         billingInfo.trigger('stepstatuschange'); // trigger a rerender
