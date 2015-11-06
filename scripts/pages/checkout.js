@@ -12,9 +12,6 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
                 me.model.next();
             });
         },
-        cancel: function(){
-            this.model.cancelStep();
-        },
         choose: function () {
             var me = this;
             me.model.choose.apply(me.model, arguments);
@@ -84,12 +81,26 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             'address.addressType',
             'phoneNumbers.home',
             'contactId',
-            'email'
+            'email',
+            'updateMode'
         ],
         renderOnChange: [
             'address.countryCode',
-            'contactId'
-        ]
+            'contactId',
+            'updateMode'
+        ],
+        beginAddContact: function () {
+            this.model.set('contactId', 'new');
+            this.model.set('updateMode', 'addNew');
+        },
+        beginEditContact: function (e) {
+            this.model.set('updateMode', 'edit');
+        },
+        savedAddressSelected: function (e) {
+            if (this.model.get('contactId') != e.currentTarget.value) {
+                this.model.set('updateMode', 'savedAddress');
+            }
+        }
     });
 
     var ShippingInfoView = CheckoutStepView.extend({
@@ -179,9 +190,9 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             var me = this;
             var isVisaCheckout = this.model.visaCheckoutFlowComplete();
             if (!isVisaCheckout) {
-            this.editing.savedCard = true;
-            this.render();
-            } else if (window.confirm(Hypr.getLabel('visaCheckoutEditReminder'))) {
+                this.editing.savedCard = true;
+                this.render();
+            } else {
                 this.doModelAction('cancelVisaCheckout').then(function() {
                     me.editing.savedCard = false;
                     me.render();
@@ -308,8 +319,8 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
                 clientId: clientId,
                 paymentRequest: {
                     currencyCode: orderModel.get('currencyCode'),
-                    subtotal: "" + orderModel.get('total')
-            }
+                    subtotal: "" + orderModel.get('subtotal')
+                }
             });
         }
         /* end visa checkout */

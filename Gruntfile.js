@@ -1,6 +1,8 @@
 module.exports = function(grunt) {
 
     var pkg = grunt.file.readJSON('./package.json');
+    var semver = require('semver');
+
     grunt.initConfig({
         mozuconfig: grunt.file.exists('./mozu.config.json') ? grunt.file.readJSON('./mozu.config.json') : {},
         pkg: pkg,
@@ -129,7 +131,7 @@ module.exports = function(grunt) {
               {
                 "src": "mozusync.del.remove",
                 "action": "delete"
-                }
+              }
             ]
           },
           "upload": {
@@ -167,7 +169,7 @@ module.exports = function(grunt) {
               "action": "deleteAll"
             },
             "src": "<%= mozusync.upload.src %>"
-            }
+          }
         }
     });
 
@@ -190,8 +192,9 @@ module.exports = function(grunt) {
 
         var j = grunt.file.readJSON('./theme.json');
         var b = grunt.file.readJSON('./bower.json');
-        j.about.name = "Core8 " + pkg.version;
-        b.version = pkg.version;
+        var newVersion = semver.inc(pkg.version, grunt.option('increment') || 'prerelease');
+        j.about.name = "Core8 " + newVersion;
+        b.version = newVersion;
         grunt.file.write('./theme.json', JSON.stringify(j, null, 4));
         grunt.file.write('./bower.json', JSON.stringify(b, null, 4));
 
