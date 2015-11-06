@@ -12,9 +12,6 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
                 me.model.next();
             });
         },
-        cancel: function(){
-            this.model.cancelStep();
-        },
         amazonShippingAndBilling: function() {
             //isLoading(true);
             window.location = "/checkout/"+window.order.id+"?isAwsCheckout=true&access_token="+$.deparam().access_token+"&view="+AmazonPay.viewName;
@@ -88,12 +85,26 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             'address.addressType',
             'phoneNumbers.home',
             'contactId',
-            'email'
+            'email',
+            'updateMode'
         ],
         renderOnChange: [
             'address.countryCode',
-            'contactId'
-        ]
+            'contactId',
+            'updateMode'
+        ],
+        beginAddContact: function () {
+            this.model.set('contactId', 'new');
+            this.model.set('updateMode', 'addNew');
+        },
+        beginEditContact: function (e) {
+            this.model.set('updateMode', 'edit');
+        },
+        savedAddressSelected: function (e) {
+            if (this.model.get('contactId') != e.currentTarget.value) {
+                this.model.set('updateMode', 'savedAddress');
+            }
+        }
     });
 
     var ShippingInfoView = CheckoutStepView.extend({
@@ -315,8 +326,8 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
                 clientId: clientId,
                 paymentRequest: {
                     currencyCode: orderModel.get('currencyCode'),
-                    subtotal: "" + orderModel.get('total')
-            }
+                    subtotal: "" + orderModel.get('subtotal')
+                }
             });
         }
         /* end visa checkout */

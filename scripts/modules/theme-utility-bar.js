@@ -1,45 +1,45 @@
 define(['jquery', 'shim!vendor/datetimepicker/jquery-simple-datetimepicker[jquery=jquery]>jquery' ], function ($) { 
-
-    $(document).ready(function() {
-        var DateTimePicker = function() {
-                var me = this;
-                this.handler = $('#mz-date-display');
-                this.displayBar = $('#mz-date-display-cover');
-                this.urlBar = $('#mz-url-copy');
-                this.dateField = $('.visible-date');
-                this.setQueryString(this.getCookie(), true);
-                this.showUrl();
-                this.options = {
-                    autodateOnStart: true,
-                    currentTime: this.getCookie(),
-                    onInit: function(handler) {
-                        me.picker = handler;
-                        me.setDate(me.getCookie());
-                    }
-                };
-            },
-            ButtonHandler = function(selector) {
-                this.handler = $(selector);
-                this.urlBar = $('#mz-url-copy');
-            },
-            ShowHideAction = function() {
-                ButtonHandler.apply(this, arguments);
-                this.headerbar = $('.mz-future-date-header');
-                this.indicator = $('.mz-future-bar-indicator');
-                this.isShown = (function() {
-                    if (!document.cookie.split(';').filter(function(str) {return str.indexOf('MZ_SHOW_FUTURE_BAR') > 0;})) {
-                        return true;
-                    }
-                    else {
-                        var cookie  = document.cookie.split(';').filter(function(str) {return str.indexOf('MZ_SHOW_FUTURE_BAR') > 0;})[0];
-                        if (!cookie) return true;
-                        return cookie.indexOf('true') !== -1;
-                    }
-                })();
-            },
-            ShareAction = function() {
-                ButtonHandler.apply(this, arguments);
+    
+    var DateTimePicker = function() {
+            var me = this;
+            this.handler = $('#mz-date-display');
+            this.displayBar = $('#mz-date-display-cover');
+            this.urlBar = $('#mz-url-copy');
+            this.dateField = $('.visible-date');
+            this.setQueryString(this.getCookie(), true);
+            this.showUrl();
+            this.options = {
+                autodateOnStart: true,
+                currentTime: this.getCookie(),
+                futureOnly: true,
+                onInit: function(handler) {
+                    me.picker = handler;
+                    me.setDate(me.getCookie());
+                }
             };
+        },
+        ButtonHandler = function(selector) {
+            this.handler = $(selector);
+            this.urlBar = $('#mz-url-copy');
+        },
+        ShowHideAction = function() {
+            ButtonHandler.apply(this, arguments);
+            this.headerbar = $('.mz-future-date-header');
+            this.indicator = $('.mz-future-bar-indicator');
+            this.isShown = (function() {
+                if (!document.cookie.split(';').filter(function(str) {return str.indexOf('MZ_SHOW_FUTURE_BAR') > 0;})) {
+                    return true;
+                }
+                else {
+                    var cookie  = document.cookie.split(';').filter(function(str) {return str.indexOf('MZ_SHOW_FUTURE_BAR') > 0;})[0];
+                    if (!cookie) return true;
+                    return cookie.indexOf('true') !== -1;
+                }
+            })();
+        },
+        ShareAction = function() {
+            ButtonHandler.apply(this, arguments);
+        };
 
         ShareAction.prototype = new ButtonHandler();
 
@@ -162,13 +162,12 @@ define(['jquery', 'shim!vendor/datetimepicker/jquery-simple-datetimepicker[jquer
         };
 
 
-        var datetimepicker = new DateTimePicker(),
-            showhideaction = new ShowHideAction('#mz-showhide-preview-bar'),
-            shareaction = new ShareAction('#mz-share');
-        
-        datetimepicker.init();
-        showhideaction.init();
-        shareaction.init();
-    });
+    var datetimepicker = new DateTimePicker(),
+        showhideaction = new ShowHideAction('#mz-showhide-preview-bar'),
+        shareaction = new ShareAction('#mz-share');
+    
+    datetimepicker.init();
+    showhideaction.init();
+    shareaction.init();
 
 });
