@@ -1,11 +1,12 @@
 <h3 class="mz-formstep-header mz-checkoutform-header">
     {{ labels.paymentInformation }}
-    <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit">{{ labels.change }}</a>
+   
     <!-- {% if model.isMozuCheckout == false and model.stepStatus == "incomplete" %}
       <a href="javascript:;" class="mz-formstep-cancel" data-mz-action="cancel">{{ labels.cancel }}</a>
     {% endif %} -->
 </h3>
 <div class="mz-formstep-body">
+    <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit">{{ labels.change }}</a>
     <div class="mz-formstep-summary mz-l-stack">
         {% for payment in model.activePayments %}
         {% if payment.billingInfo.paymentType == "Check" %}
