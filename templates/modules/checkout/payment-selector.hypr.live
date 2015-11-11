@@ -25,6 +25,9 @@
                 </div>
                 <div class="mz-l-formfieldgroup-cell">
                     <label class="mz-paymentselector-label mz-paymentselector-label-savedcreditcard mz-checkoutform-radio" for="paymentType-savedcreditcard-{{ paymentId }}">{{ labels.savedCreditCard }}</label>
+					<!-- <div style="background:red">
+					{% dump model %}
+					</div> -->
                     <select {% if not model.usingSavedCard %}disabled="true"{% endif %} name="savedPaymentMethods" class="mz-payment-select-saved-payments" data-mz-value="savedPaymentMethodId">
 				        <option selected="selected" value="">{{ labels.selectSavedCreditCard }}</option>
                         {% for card in model.savedPaymentMethods %}

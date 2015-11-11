@@ -14,7 +14,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
         },
         choose: function () {
             var me = this;
-            me.model.choose.apply(me.model, arguments);
+            me.model.choose.apply(me.model, arguments); 
         },
         constructor: function () {
             var me = this;
@@ -182,21 +182,36 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             this.model.getOrder().set('acceptsMarketing', $(e.currentTarget).prop('checked'));
         },
         updatePaymentType: function(e) {
-            var newType = $(e.currentTarget).val();
+            var newType = $(e.currentTarget).val(); 
             this.model.set('usingSavedCard', e.currentTarget.hasAttribute('data-mz-saved-credit-card'));
             this.model.set('paymentType', newType);
         },
+
         beginEditingCard: function() {
             var me = this;
-            var isVisaCheckout = this.model.visaCheckoutFlowComplete();
-            if (!isVisaCheckout) {
-                this.editing.savedCard = true;
+            var isVisaCheckout = this.model.visaCheckoutFlowComplete(),
+                isPayPalExpress2Checkout = this.model.payPalExpress2CheckoutFlowComplete();
+             
+            if (!isVisaCheckout || !isPayPalExpress2Checkout) {
+                this.editing.savedCard = true; 
                 this.render();
-            } else {
+            } else if (isVisaCheckout) {
                 this.doModelAction('cancelVisaCheckout').then(function() {
                     me.editing.savedCard = false;
                     me.render();
                 });
+            } else if (isPayPalExpress2Checkout) {
+                this.doModelAction('cancelPaypalExpress2Checkout').then(function () {
+                    me.editing.savedCard = false;
+                    me.render();
+                });
+            }
+        },
+        beginEditingExternalPayment: function () {
+            var me = this;
+            if (this.model.externalCheckoutFlowComplete()) {
+                    me.editing.savedCard = false;
+                    me.render();
             }
         },
         beginEditingBillingAddress: function() {
@@ -210,6 +225,12 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
         cancelApplyCredit: function () {
             this.model.closeApplyCredit();
             this.render();
+        },
+        cancelExternalCheckout: function () {
+            this.doModelAction('cancelExternalCheckout').then(function () {
+                me.editing.savedCard = false;
+                me.render();
+            });
         },
         finishApplyCredit: function () {
             var self = this;

@@ -75,15 +75,6 @@ define([
             },
             next: function () {
                 if (this.submit()) this.isLoading(true);
-           /* },
-            cancelStep: function() {
-                var me = this,
-                order = me.getOrder();
-                me.isLoading(true);
-                order.apiModel.get().ensure(function(){
-                    me.isLoading(false);
-                    return me.stepStatus("complete");
-                }); */
             }
         }),
 
@@ -332,7 +323,6 @@ define([
                 savedPaymentMethodId: {
                     fn: "validateSavedPaymentMethodId"
                 },
-
                 'billingContact.email': {
                     pattern: 'email',
                     msg: Hypr.getLabel('emailMissing')
@@ -345,7 +335,8 @@ define([
             relations: {
                 billingContact: CustomerModels.Contact,
                 card: PaymentMethods.CreditCardWithCVV,
-                check: PaymentMethods.Check
+                check: PaymentMethods.Check,
+                fulfillmentContact: FulfillmentContact
             },
             validatePaymentType: function(value, attr) {
               var order = this.getOrder(); 
@@ -363,12 +354,21 @@ define([
 
             },
             helpers: ['acceptsMarketing', 'savedPaymentMethods', 'availableStoreCredits', 'applyingCredit', 'maxCreditAmountToApply',
-                'activeStoreCredits', 'nonStoreCreditTotal', 'activePayments', 'hasSavedCardPayment', 'availableDigitalCredits', 'digitalCreditPaymentTotal', 'isAnonymousShopper', 'visaCheckoutFlowComplete'],
+                'activeStoreCredits', 'nonStoreCreditTotal', 'activePayments', 'hasSavedCardPayment', 'availableDigitalCredits', 'digitalCreditPaymentTotal', 'isAnonymousShopper', 'visaCheckoutFlowComplete', 'payPalExpress2CheckoutFlowComplete', 'isExternalCheckoutFlowComplete', 'checkoutFlow', 'savedPaymentMethodId'],
             acceptsMarketing: function () {
                 return this.getOrder().get('acceptsMarketing');
             },
             visaCheckoutFlowComplete: function() {
                 return this.get('paymentWorkflow') === 'VisaCheckout';
+            },
+            payPalExpress2CheckoutFlowComplete: function () {
+                return this.get('paymentWorkflow') === 'PayPalExpress2';
+            },
+            isExternalCheckoutFlowComplete: function () {
+                return this.get('paymentWorkflow') !== "Mozu";
+            }, 
+            checkoutFlow: function () {
+                return this.get('paymentWorkflow');
             },
             cancelVisaCheckout: function() {
                 var self = this;
@@ -379,6 +379,25 @@ define([
                     self.stepStatus('incomplete');
                 });
             },
+            cancelPaypalExpress2Checkout: function () {
+                var self = this;
+                var order = this.getOrder();
+                var currentPayment = order.apiModel.getCurrentPayment();
+                return order.apiVoidPayment(currentPayment.id).then(function () {
+                    self.clear();
+                    self.stepStatus('incomplete');
+                });
+            },
+            cancelExternalCheckout: function () {
+                var self = this;
+                var order = this.getOrder();
+                var currentPayment = order.apiModel.getCurrentPayment();
+                return order.apiVoidPayment(currentPayment.id).then(function () {
+                    self.clear();
+                    self.stepStatus('incomplete');
+                });
+            }, 
+          
             activePayments: function () {
                 return this.getOrder().apiModel.getActivePayments();
             },
@@ -401,6 +420,9 @@ define([
             savedPaymentMethods: function () {
                 var cards = this.getOrder().get('customer').get('cards').toJSON();
                 return cards && cards.length > 0 && cards;
+            },
+            savedPaymentMethodId: function () {
+                   return this.get('savedPaymentMethodId');
             },
             activeStoreCredits: function () {
                 var active = this.getOrder().apiModel.getActiveStoreCredits();
@@ -835,24 +857,24 @@ define([
                 this._cachedDigitalCredits = null;
 
                 _.bindAll(this, 'applyPayment', 'markComplete');
-            },
+            }, 
             selectPaymentType: function(me, newPaymentType) {
-                if (!me.changed || !me.changed.paymentWorkflow) {
+                if (!me.changed || !me.changed.paymentWorkflow) { 
                     me.set('paymentWorkflow', 'Mozu');
-                }
+                } 
                 me.get('check').selected = newPaymentType === 'Check';
-                me.get('card').selected = newPaymentType === 'CreditCard';
-            },
-            calculateStepStatus: function () {
-                var fulfillmentComplete = this.parent.get('fulfillmentInfo').stepStatus() === 'complete',
+                me.get('card').selected = newPaymentType === 'CreditCard'; 
+            }, 
+            calculateStepStatus: function () { 
+                var fulfillmentComplete = this.parent.get('fulfillmentInfo').stepStatus() === 'complete', 
                     activePayments = this.activePayments(),
                     thereAreActivePayments = activePayments.length > 0,
                     paymentTypeIsCard = activePayments && !!_.findWhere(activePayments, { paymentType: 'CreditCard' }),
                     paymentTypeIsPayPal = activePayments && !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }),
                     paymentTypeIsPayPalNew = activePayments && !!_.findWhere(activePayments, { paymentType: 'PayPalExpress2' }),
                     balanceNotPositive = this.parent.get('amountRemainingForPayment') <= 0;
-
-                if (this.isMozuCheckout() || paymentTypeIsPayPalNew) return this.stepStatus("complete");
+                 
+                if (paymentTypeIsPayPalNew) return this.stepStatus("complete");
                 if (paymentTypeIsCard && !Hypr.getThemeSetting('isCvvSuppressed')) return this.stepStatus('incomplete'); // initial state for CVV entry
 
                 if (!fulfillmentComplete) return this.stepStatus('new');

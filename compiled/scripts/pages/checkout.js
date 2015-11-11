@@ -76,15 +76,6 @@ define('modules/models-checkout',[
             },
             next: function () {
                 if (this.submit()) this.isLoading(true);
-           /* },
-            cancelStep: function() {
-                var me = this,
-                order = me.getOrder();
-                me.isLoading(true);
-                order.apiModel.get().ensure(function(){
-                    me.isLoading(false);
-                    return me.stepStatus("complete");
-                }); */
             }
         }),
 
@@ -333,7 +324,6 @@ define('modules/models-checkout',[
                 savedPaymentMethodId: {
                     fn: "validateSavedPaymentMethodId"
                 },
-
                 'billingContact.email': {
                     pattern: 'email',
                     msg: Hypr.getLabel('emailMissing')
@@ -346,7 +336,8 @@ define('modules/models-checkout',[
             relations: {
                 billingContact: CustomerModels.Contact,
                 card: PaymentMethods.CreditCardWithCVV,
-                check: PaymentMethods.Check
+                check: PaymentMethods.Check,
+                fulfillmentContact: FulfillmentContact
             },
             validatePaymentType: function(value, attr) {
               var order = this.getOrder(); 
@@ -364,12 +355,21 @@ define('modules/models-checkout',[
 
             },
             helpers: ['acceptsMarketing', 'savedPaymentMethods', 'availableStoreCredits', 'applyingCredit', 'maxCreditAmountToApply',
-                'activeStoreCredits', 'nonStoreCreditTotal', 'activePayments', 'hasSavedCardPayment', 'availableDigitalCredits', 'digitalCreditPaymentTotal', 'isAnonymousShopper', 'visaCheckoutFlowComplete'],
+                'activeStoreCredits', 'nonStoreCreditTotal', 'activePayments', 'hasSavedCardPayment', 'availableDigitalCredits', 'digitalCreditPaymentTotal', 'isAnonymousShopper', 'visaCheckoutFlowComplete', 'payPalExpress2CheckoutFlowComplete', 'isExternalCheckoutFlowComplete', 'checkoutFlow', 'savedPaymentMethodId'],
             acceptsMarketing: function () {
                 return this.getOrder().get('acceptsMarketing');
             },
             visaCheckoutFlowComplete: function() {
                 return this.get('paymentWorkflow') === 'VisaCheckout';
+            },
+            payPalExpress2CheckoutFlowComplete: function () {
+                return this.get('paymentWorkflow') === 'PayPalExpress2';
+            },
+            isExternalCheckoutFlowComplete: function () {
+                return this.get('paymentWorkflow') !== "Mozu";
+            }, 
+            checkoutFlow: function () {
+                return this.get('paymentWorkflow');
             },
             cancelVisaCheckout: function() {
                 var self = this;
@@ -380,6 +380,25 @@ define('modules/models-checkout',[
                     self.stepStatus('incomplete');
                 });
             },
+            cancelPaypalExpress2Checkout: function () {
+                var self = this;
+                var order = this.getOrder();
+                var currentPayment = order.apiModel.getCurrentPayment();
+                return order.apiVoidPayment(currentPayment.id).then(function () {
+                    self.clear();
+                    self.stepStatus('incomplete');
+                });
+            },
+            cancelExternalCheckout: function () {
+                var self = this;
+                var order = this.getOrder();
+                var currentPayment = order.apiModel.getCurrentPayment();
+                return order.apiVoidPayment(currentPayment.id).then(function () {
+                    self.clear();
+                    self.stepStatus('incomplete');
+                });
+            }, 
+          
             activePayments: function () {
                 return this.getOrder().apiModel.getActivePayments();
             },
@@ -402,6 +421,9 @@ define('modules/models-checkout',[
             savedPaymentMethods: function () {
                 var cards = this.getOrder().get('customer').get('cards').toJSON();
                 return cards && cards.length > 0 && cards;
+            },
+            savedPaymentMethodId: function () {
+                   return this.get('savedPaymentMethodId');
             },
             activeStoreCredits: function () {
                 var active = this.getOrder().apiModel.getActiveStoreCredits();
@@ -836,24 +858,24 @@ define('modules/models-checkout',[
                 this._cachedDigitalCredits = null;
 
                 _.bindAll(this, 'applyPayment', 'markComplete');
-            },
+            }, 
             selectPaymentType: function(me, newPaymentType) {
-                if (!me.changed || !me.changed.paymentWorkflow) {
+                if (!me.changed || !me.changed.paymentWorkflow) { 
                     me.set('paymentWorkflow', 'Mozu');
-                }
+                } 
                 me.get('check').selected = newPaymentType === 'Check';
-                me.get('card').selected = newPaymentType === 'CreditCard';
-            },
-            calculateStepStatus: function () {
-                var fulfillmentComplete = this.parent.get('fulfillmentInfo').stepStatus() === 'complete',
+                me.get('card').selected = newPaymentType === 'CreditCard'; 
+            }, 
+            calculateStepStatus: function () { 
+                var fulfillmentComplete = this.parent.get('fulfillmentInfo').stepStatus() === 'complete', 
                     activePayments = this.activePayments(),
                     thereAreActivePayments = activePayments.length > 0,
                     paymentTypeIsCard = activePayments && !!_.findWhere(activePayments, { paymentType: 'CreditCard' }),
                     paymentTypeIsPayPal = activePayments && !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }),
                     paymentTypeIsPayPalNew = activePayments && !!_.findWhere(activePayments, { paymentType: 'PayPalExpress2' }),
                     balanceNotPositive = this.parent.get('amountRemainingForPayment') <= 0;
-
-                if (this.isMozuCheckout() || paymentTypeIsPayPalNew) return this.stepStatus("complete");
+                 
+                if (paymentTypeIsPayPalNew) return this.stepStatus("complete");
                 if (paymentTypeIsCard && !Hypr.getThemeSetting('isCvvSuppressed')) return this.stepStatus('incomplete'); // initial state for CVV entry
 
                 if (!fulfillmentComplete) return this.stepStatus('new');
@@ -1733,7 +1755,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
         },
         choose: function () {
             var me = this;
-            me.model.choose.apply(me.model, arguments);
+            me.model.choose.apply(me.model, arguments); 
         },
         constructor: function () {
             var me = this;
@@ -1901,21 +1923,36 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             this.model.getOrder().set('acceptsMarketing', $(e.currentTarget).prop('checked'));
         },
         updatePaymentType: function(e) {
-            var newType = $(e.currentTarget).val();
+            var newType = $(e.currentTarget).val(); 
             this.model.set('usingSavedCard', e.currentTarget.hasAttribute('data-mz-saved-credit-card'));
             this.model.set('paymentType', newType);
         },
+
         beginEditingCard: function() {
             var me = this;
-            var isVisaCheckout = this.model.visaCheckoutFlowComplete();
-            if (!isVisaCheckout) {
-                this.editing.savedCard = true;
+            var isVisaCheckout = this.model.visaCheckoutFlowComplete(),
+                isPayPalExpress2Checkout = this.model.payPalExpress2CheckoutFlowComplete();
+             
+            if (!isVisaCheckout || !isPayPalExpress2Checkout) {
+                this.editing.savedCard = true; 
                 this.render();
-            } else {
+            } else if (isVisaCheckout) {
                 this.doModelAction('cancelVisaCheckout').then(function() {
                     me.editing.savedCard = false;
                     me.render();
                 });
+            } else if (isPayPalExpress2Checkout) {
+                this.doModelAction('cancelPaypalExpress2Checkout').then(function () {
+                    me.editing.savedCard = false;
+                    me.render();
+                });
+            }
+        },
+        beginEditingExternalPayment: function () {
+            var me = this;
+            if (this.model.externalCheckoutFlowComplete()) {
+                    me.editing.savedCard = false;
+                    me.render();
             }
         },
         beginEditingBillingAddress: function() {
@@ -1929,6 +1966,12 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
         cancelApplyCredit: function () {
             this.model.closeApplyCredit();
             this.render();
+        },
+        cancelExternalCheckout: function () {
+            this.doModelAction('cancelExternalCheckout').then(function () {
+                me.editing.savedCard = false;
+                me.render();
+            });
         },
         finishApplyCredit: function () {
             var self = this;
