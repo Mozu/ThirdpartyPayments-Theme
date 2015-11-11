@@ -6,6 +6,7 @@
         </div>
     {%endif%}
      <div class="mz-l-formfieldgroup-row mz-paymentselector-option mz-paymentselector-newcreditcard mz-checkoutform {% if model.paymentType == "CreditCard" and not model.usingSavedCard %}mz-checkoutform-active{% endif %}">
+ 	<div class="mz-l-formfieldgroup-row">
         <div class="mz-l-formfieldgroup-cell">
             <input data-mz-value="paymentType" data-mz-new-credit-card id="paymentType-newcreditcard-{{ paymentId }}" name="paymentType" type="radio" class="mz-paymenttype-input" value="CreditCard" {% if model.paymentType == "CreditCard" and not model.usingSavedCard %}checked="true"{% endif %} />
         </div>
@@ -23,7 +24,7 @@
     </div>
     {% if model.savedPaymentMethods %}
     <div class="mz-l-formfieldgroup-row mz-paymentselector-option mz-paymentselector-savedcreditcard mz-checkoutform {% if model.paymentType == "CreditCard" and model.usingSavedCard %}mz-checkoutform-active{% endif %}">
-       <div class="mz-l-formfieldgroup-row">
+  <div class="mz-l-formfieldgroup-row">
         <div class="mz-l-formfieldgroup-cell">
             <input data-mz-value="paymentType" data-mz-saved-credit-card id="paymentType-savedcreditcard-{{ paymentId }}" name="paymentType" type="radio" class="mz-paymenttype-input" value="CreditCard" {% if model.paymentType == "CreditCard" and model.usingSavedCard %}checked="checked"{% endif %} />
         </div>
@@ -52,7 +53,7 @@
 	        </div>
 	        {% endif %}
 	    </div>
-        </div>
+</div>
     {% endif %}
     {% if siteContext.checkoutSettings.payByMail %}
     <div class="mz-l-formfieldgroup-row mz-paymentselector-option mz-paymentselector-check mz-checkoutform {% if model.paymentType == "Check" %}mz-checkoutform-active{% endif %}">
@@ -119,8 +120,8 @@
         <div class="mz-formfieldgroup-cell">
             <span class="mz-validationmessage" data-mz-validationmessage-for="paymentType"></span>
         </div>
+		</div>
     </div>
-</div>
 
 {% if model.paymentType == "PaypalExpress" %}
     <p>{{ labels.paypalExpressInfo }}</p>

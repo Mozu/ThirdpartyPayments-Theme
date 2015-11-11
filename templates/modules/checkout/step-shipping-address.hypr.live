@@ -1,19 +1,21 @@
 ﻿    <h3 class="mz-formstep-header mz-checkoutform-header">
-        {{ labels.shippingInformation }}
-        {% if model.requiresFulfillmentInfo or model.requiresDigitalFulfillmentContact %}
-        <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit">{{ labels.change }}</a>
-        {% endif %}
-        {% if model.isAwsCheckout and model.stepStatus == "incomplete" %}
-          <a href="javascript:;" class="mz-formstep-cancel" data-mz-action="cancel">{{ labels.cancel }}</a>
-        {% endif %}
+      {{ labels.shippingInformation }}
+      <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit">{{ labels.change }}</a>
     </h3>
     <div class="mz-formstep-body">
       {% if not model.address.candidateValidatedAddresses %}
       <div class="mz-formstep-summary mz-addresssummary mz-checkoutform">
+        {% if model.requiresFulfillmentInfo or model.requiresDigitalFulfillmentContact %}
+             
+        {% endif %}
+        {% if model.isAwsCheckout and model.stepStatus == "incomplete" %}
+              <a href="javascript:;" class="mz-formstep-cancel" data-mz-action="cancel">{{ labels.cancel }}</a>
+        {% endif %}
+
         {% if model.requiresFulfillmentInfo %}
-          {% include "modules/common/address-summary" %}  
-          {% if model.isAwsCheckout %}
-            <div style="margin-top:5px;margin-bottom:20px;">
+        {% include "modules/common/address-summary" %}
+        {% if model.isAwsCheckout %}
+        <div style="margin-top:5px;margin-bottom:20px;">
               <a data-mz-action="amazonShippingAndBilling" href="javascript:;">{{labels.awsChangeAddress}}</a>
             </div>
           {%endif%}    
