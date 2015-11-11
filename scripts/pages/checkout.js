@@ -1,3 +1,4 @@
+/* globals V: true */
 require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu", "modules/models-checkout", "modules/views-messages", "modules/cart-monitor", 'hyprlivecontext', 'modules/editable-view', 'modules/preserve-element-through-render'], function ($, _, Hypr, Backbone, CheckoutModels, messageViewFactory, CartMonitor, HyprLiveContext, EditableView, preserveElements) {
 
     var CheckoutStepView = EditableView.extend({
@@ -81,26 +82,12 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             'address.addressType',
             'phoneNumbers.home',
             'contactId',
-            'email',
-            'updateMode'
+            'email'
         ],
         renderOnChange: [
             'address.countryCode',
-            'contactId',
-            'updateMode'
-        ],
-        beginAddContact: function () {
-            this.model.set('contactId', 'new');
-            this.model.set('updateMode', 'addNew');
-        },
-        beginEditContact: function (e) {
-            this.model.set('updateMode', 'edit');
-        },
-        savedAddressSelected: function (e) {
-            if (this.model.get('contactId') != e.currentTarget.value) {
-                this.model.set('updateMode', 'savedAddress');
-            }
-        }
+            'contactId'
+        ]
     });
 
     var ShippingInfoView = CheckoutStepView.extend({
@@ -178,7 +165,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
                 this.visaCheckoutInitialized = true;
             }
         },
-        updateAcceptsMarketing: function() {
+        updateAcceptsMarketing: function(e) {
             this.model.getOrder().set('acceptsMarketing', $(e.currentTarget).prop('checked'));
         },
         updatePaymentType: function(e) {
@@ -186,32 +173,13 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             this.model.set('usingSavedCard', e.currentTarget.hasAttribute('data-mz-saved-credit-card'));
             this.model.set('paymentType', newType);
         },
-
-        beginEditingCard: function() {
+        beginEditingCard: function () {
             var me = this;
-            var isVisaCheckout = this.model.visaCheckoutFlowComplete(),
-                isPayPalExpress2Checkout = this.model.payPalExpress2CheckoutFlowComplete();
-             
-            if (!isVisaCheckout || !isPayPalExpress2Checkout) {
-                this.editing.savedCard = true; 
+            if (!this.model.isExternalCheckoutFlowComplete()) {
+                this.editing.savedCard = true;
                 this.render();
-            } else if (isVisaCheckout) {
-                this.doModelAction('cancelVisaCheckout').then(function() {
-                    me.editing.savedCard = false;
-                    me.render();
-                });
-            } else if (isPayPalExpress2Checkout) {
-                this.doModelAction('cancelPaypalExpress2Checkout').then(function () {
-                    me.editing.savedCard = false;
-                    me.render();
-                });
-            }
-        },
-        beginEditingExternalPayment: function () {
-            var me = this;
-            if (this.model.externalCheckoutFlowComplete()) {
-                    me.editing.savedCard = false;
-                    me.render();
+            } else {
+                this.cancelExternalCheckout();
             }
         },
         beginEditingBillingAddress: function() {
@@ -261,8 +229,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             var val = $(e.currentTarget).prop('value'),
                 creditCode = $(e.currentTarget).attr('data-mz-credit-code-target');  //target
             if (!creditCode) {
-                console.log('checkout.applyDigitalCredit could not find target.');
-                return;
+                throw new Error('checkout.applyDigitalCredit could not find target.');
             }
             var amtToApply = this.stripNonNumericAndParseFloat(val);
             
@@ -320,7 +287,6 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             // on success, attach the encoded payment data to the window
             // then call the sdk's api method for digital wallets, via models-checkout's helper
             V.on("payment.success", function(payment) {
-                console.log({ success: payment });
                 me.editing.savedCard = false;
                 me.model.parent.processDigitalWallet('VisaCheckout', payment);
             });

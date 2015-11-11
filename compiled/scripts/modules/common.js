@@ -24,7 +24,7 @@ define('modules/api',['sdk', 'jquery', 'hyprlive'], function (Mozu, $, Hypr) {
             if (requestConf && requestConf.url) e += (" at " + requestConf.url);
             var correlation = xhr && xhr.getResponseHeader && xhr.getResponseHeader('x-vol-correlation');
             if (correlation) e += " --- Correlation ID: " + correlation;
-            if (window && window.console) console.error(e, badPromise, xhr);
+            if (window && window.console) window.console.error(e, badPromise, xhr);
         });
     }
     return api;
@@ -7161,6 +7161,14 @@ define('modules/models-customer',['modules/backbone-mozu', 'underscore', 'module
                     var rules = fields.validation;
                     var value = values[0];
 
+                    function format () {
+                        var args = Array.prototype.slice.call(arguments),
+                            text = args.shift();
+                        return text.replace(/\{(\d+)\}/g, function (match, number) {
+                            return typeof args[number] !== 'undefined' ? args[number] : match;
+                        });
+                    }
+
                     if (inputType === 'TextBox') {
                         if (rules.maxStringLength && value.length > rules.maxStringLength) return format(messages.maxLength, fields.adminName, rules.maxStringLength);
                         if (rules.minStringLength && value.length < rules.minStringLength) return format(messages.minLength, fields.adminName, rules.minStringLength);
@@ -7174,13 +7182,6 @@ define('modules/models-customer',['modules/backbone-mozu', 'underscore', 'module
                         if (rules.minDateTime && Date.parse(value) < Date.parse(rules.minDateTime)) return format(messages.min, fields.adminName, Date.parse(rules.minDateTime));
                     }
 
-                    function format () {
-                        var args = Array.prototype.slice.call(arguments),
-                            text = args.shift();
-                        return text.replace(/\{(\d+)\}/g, function (match, number) {
-                            return typeof args[number] !== 'undefined' ? args[number] : match;
-                        });
-                    }
                 }
             }
         }
@@ -10158,6 +10159,7 @@ define('modules/intent-emitter',['underscore', 'backbone'], function(_, Backbone
  */
 
 define('modules/get-partial-view',['modules/jquery-mozu', 'modules/api'], function($, api) {
+    
     var PARTIAL_PARAM_NAME = "_mz_partial";
 
     function setPartialTrue(url) {
