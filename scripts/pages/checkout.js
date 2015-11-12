@@ -179,17 +179,13 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             this.model.set('usingSavedCard', e.currentTarget.hasAttribute('data-mz-saved-credit-card'));
             this.model.set('paymentType', newType);
         },
-        beginEditingCard: function() {
+        beginEditingCard: function () {
             var me = this;
-            var isVisaCheckout = this.model.visaCheckoutFlowComplete();
-            if (!isVisaCheckout) {
-            this.editing.savedCard = true;
-            this.render();
-            } else if (window.confirm(Hypr.getLabel('visaCheckoutEditReminder'))) {
-                this.doModelAction('cancelVisaCheckout').then(function() {
-                    me.editing.savedCard = false;
-                    me.render();
-                });
+            if (!this.model.isExternalCheckoutFlowComplete()) {
+                this.editing.savedCard = true;
+                this.render();
+            } else {
+                this.cancelExternalCheckout();
             }
         },
         beginEditingBillingAddress: function() {
@@ -203,6 +199,12 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
         cancelApplyCredit: function () {
             this.model.closeApplyCredit();
             this.render();
+        },
+        cancelExternalCheckout: function () {
+            this.doModelAction('cancelExternalCheckout').then(function () {
+                me.editing.savedCard = false;
+                me.render();
+            });
         },
         finishApplyCredit: function () {
             var self = this;

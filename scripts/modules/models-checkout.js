@@ -347,18 +347,18 @@ define([
 
             },
             helpers: ['acceptsMarketing', 'savedPaymentMethods', 'availableStoreCredits', 'applyingCredit', 'maxCreditAmountToApply',
-              'activeStoreCredits', 'nonStoreCreditTotal', 'activePayments', 'hasSavedCardPayment', 'availableDigitalCredits', 'digitalCreditPaymentTotal', 'isAnonymousShopper', 'visaCheckoutFlowComplete'],
+              'activeStoreCredits', 'nonStoreCreditTotal', 'activePayments', 'hasSavedCardPayment', 'availableDigitalCredits', 'digitalCreditPaymentTotal', 'isAnonymousShopper', 'isExternalCheckoutFlowComplete'],
             acceptsMarketing: function () {
                 return this.getOrder().get('acceptsMarketing');
             },
-            visaCheckoutFlowComplete: function() {
-                return this.get('paymentWorkflow') === 'VisaCheckout';
+            isExternalCheckoutFlowComplete: function () {
+                return this.get('paymentWorkflow') !== "Mozu";
             },
-            cancelVisaCheckout: function() {
+            cancelExternalCheckout: function () {
                 var self = this;
                 var order = this.getOrder();
                 var currentPayment = order.apiModel.getCurrentPayment();
-                return order.apiVoidPayment(currentPayment.id).then(function() {
+                return order.apiVoidPayment(currentPayment.id).then(function () {
                     self.clear();
                     self.stepStatus('incomplete');
                 });

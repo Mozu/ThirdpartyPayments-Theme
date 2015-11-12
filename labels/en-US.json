@@ -71,7 +71,7 @@
   "savedCreditCard"      : "Saved Credit Card",
   "selectSavedCreditCard": "Select a credit card",
   "change"               : "change",
-
+  "removePayment"        : "remove",
   "ccVisa"         : "Visa",
   "ccMastercard"     : "MasterCard",
   "ccAmericanExpress"    : "American Express",
