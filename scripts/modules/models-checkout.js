@@ -142,6 +142,7 @@ define([
                     me = this;
                 if (this.validate()) return false;
                 this.getOrder().apiModel.update({ fulfillmentInfo: me.toJSON() }).ensure(function () {
+                    me.provisional = false;
                     me.isLoading(false);
                     order.messages.reset();
                     order.syncApiModel();
@@ -163,10 +164,6 @@ define([
                     }, this);
 
                     return false;
-                }
-
-                if (this.get('updateMode') === 'edit') {
-                    this.set('updateMode', 'editComplete');
                 }
 
                 var parent = this.parent,
@@ -260,51 +257,52 @@ define([
                 this.updateShippingMethod();
             },
             calculateStepStatus: function () {
-                // If no shipping required, we're done.
+                var st = 'new', available;
                 if (!this.requiresFulfillmentInfo()) return this.stepStatus('complete');
-
-                // If there's no shipping address yet, go blank.
+                if (this.provisional) return this.stepStatus('incomplete');
                 if (this.get('fulfillmentContact').stepStatus() !== 'complete') {
                     return this.stepStatus('new');
                 }
-
-                // Incomplete status for shipping is basically only used to show the Shipping Method's Next button,
-                // which does nothing but show the Payment Info step.
-                var billingInfo = this.parent.get('billingInfo');
-                if (!billingInfo || billingInfo.stepStatus() === 'new') return this.stepStatus('incomplete');
-
-                // Payment Info step has been initialized. Complete status hides the Shipping Method's Next button.
-                return this.stepStatus('complete');
+                available = this.get('availableShippingMethods');
+                if (available && available.length && _.findWhere(available, { shippingMethodCode: this.get('shippingMethodCode') })) {
+                    return this.stepStatus('complete');
+                }
+                return this.stepStatus('incomplete');
             },
             updateShippingMethod: function (code) {
                 var available = this.get('availableShippingMethods'),
                     newMethod = _.findWhere(available, { shippingMethodCode: code }),
-                    lowestValue = _.min(available, function(ob) { return ob.price; }); // Returns Infinity if no items in collection.
+                    lowestValue =  _.min(available, function(ob) { return ob.price; });
 
-                if (!newMethod && available && available.length && lowestValue) {
+                if (!newMethod && available && lowestValue) {
                     newMethod = lowestValue;
+                    this.provisional = true;
                 }
                 if (newMethod) {
                     this.set(newMethod);
-                    this.applyShipping();
                 }
+
+                // wait for customer to be defined
+                _.defer((function() {
+                    var contacts = this.getOrder().get('customer').get('contacts'),
+                        isPrimaryShipping = contacts.filter(function(ob) {return ob.attributes.isPrimaryShippingContact;});
+
+                    // if this is our primary shipping information
+                    if (isPrimaryShipping.length > 0 && !newMethod) {
+                        this.stepStatus('complete');
+                    }
+                }).bind(this));
             },
-            applyShipping: function() {
+            next: function () {
                 if (this.validate()) return false;
                 var me = this;
                 this.isLoading(true);
-                var order = this.getOrder();
-                if (order) {
-                    order.apiModel.update({ fulfillmentInfo: me.toJSON() }).ensure(function () {
-                        me.isLoading(false);
-                        me.calculateStepStatus();
-                        me.parent.get('billingInfo').calculateStepStatus();
-                    });
-                }
-            },
-            next: function () {
-                this.stepStatus('complete');
-                this.parent.get('billingInfo').calculateStepStatus();
+                this.getOrder().apiModel.update({ fulfillmentInfo: me.toJSON() }).ensure(function () {
+                    me.provisional = false;
+                    me.isLoading(false);
+                    me.calculateStepStatus();
+                    me.parent.get('billingInfo').calculateStepStatus();
+                });
             }
         }),
 
@@ -1072,7 +1070,7 @@ define([
                             return _.reduce(steps, function(m, i) { return m + i.stepStatus(); }, '') === 'completecompletecomplete';
                         },
                         isReady = allStepsComplete() && !(paypalCancelled);
-                        
+
                     //Visa checkout payments can be added to order without UIs knowledge. This evaluates and voids the required payments.
                     if (visaCheckoutPayment) {
                         _.each(_.filter(self.apiModel.getActivePayments(), function (payment) {
@@ -1116,6 +1114,16 @@ define([
                     var billingEmail = billingInfo.get('billingContact.email');
                     if (!billingEmail && user.email) billingInfo.set('billingContact.email', user.email);
 
+                    if (paypalCancelled) {
+                        self.apiVoidPayment(latestPayment.id).then(function (o) {
+                            self.set(o.data);
+                            self.trigger('error', {
+                                message: Hypr.getLabel('paypalExpressCancelled')
+                            });
+                            return o;
+                        });
+                    }
+
                 });
                 if (user.isAuthenticated) {
                     this.set('customer', { id: user.accountId });
@@ -1134,7 +1142,7 @@ define([
                 me.runForAllSteps(function() {
                     this.isLoading(true);
                 });
-                order.trigger('beforerefresh');
+                me.trigger('beforerefresh');
                 // void active payments; if there are none then the promise will resolve immediately
                 return api.all.apply(api, _.map(_.filter(me.apiModel.getActivePayments(), function(payment) {
                     return payment.paymentType !== 'StoreCredit' && payment.paymentType !== 'GiftCard';
@@ -1308,12 +1316,7 @@ define([
                 var customer = this.get('customer'),
                     contactInfo = this.get(infoName),
                     contact = contactInfo.get(contactName).toJSON(),
-                    process = [function () {
-                        if (contact.updateMode && contact.updateMode === 'editComplete') {
-                            return customer.apiModel.updateContact(contact).then(function (contactResult) {
-                                return contactResult;
-                            });
-                        }
+                    process = [function() {
                         if (contact.id === -1 || contact.id === 1 || contact.id === 'new') delete contact.id;
                         return customer.apiModel.addContact(contact).then(function(contactResult) {
                             contact.id = contactResult.data.id;
@@ -1347,7 +1350,7 @@ define([
                 var contactId = contact.contactId;
                 if (contactId) contact.id = contactId;
 
-                if (!contact.id || contact.id === -1 || contact.id === 1 || contact.id === 'new' || (contact.updateMode && contact.updateMode === 'editComplete')) {
+                if (!contact.id || contact.id === -1 || contact.id === 1 || contact.id === 'new') {
                     contact.types = contactTypes;
                     return api.steps(process);
                 } else {
