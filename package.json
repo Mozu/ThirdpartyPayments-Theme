@@ -20,7 +20,8 @@
     "grunt-mozu-appdev-sync": "^1.0.0",
     "mozu-theme-helpers": "^1.0.1",
     "semver": "^5.0.1",
-    "time-grunt": "^1.2.2"
+    "time-grunt": "^1.2.2",
+    "thmaa": "^0.10.5"
   },
   "engines": {
     "node": ">=0.10"
