@@ -3,10 +3,6 @@
 </h3>
 <div class="mz-formstep-body">
 
-  {% if isMozuCheckout%}
-          <a class="mz-checkout-payment-remove" href="javascript:;" data-mz-action="cancelExternalCheckout">{{ labels.removePayment }} 123</a>
-  {% endif %}
-
     <div class="mz-formstep-summary mz-l-stack">
       {% for payment in model.activePayments %}
         {% if payment.billingInfo.paymentType|lower != "paypalexpress2"  %}

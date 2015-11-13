@@ -368,37 +368,9 @@ define([
                 var self = this;
                 var order = this.getOrder();
                 var currentPayment = order.apiModel.getCurrentPayment();
-                return order.apiVoidPayment(currentPayment.id).then(function () {
-                    var me = self;
+                return order.apiVoidPayment(currentPayment.id).then(function() {
                     self.clear();
                     self.stepStatus('incomplete');
-                    _.defer(function () {
-                        me.getPaymentTypeFromCurrentPayment();
-                        var savedCardId = me.get('card.paymentServiceCardId');
-                        me.set('savedPaymentMethodId', savedCardId, { silent: true });
-                        me.setSavedPaymentMethod(savedCardId);
-
-                        me.on('change:usingSavedCard', function (me, yes) {
-                            if (!yes) {
-                                me.get('card').clear();
-                            }
-                            else {
-                                me.setSavedPaymentMethod(me.get('savedPaymentMethodId'));
-                            }
-                        });
-                    });
-                    var billingContact = this.get('billingContact');
-                    self.on('change:paymentType', self.selectPaymentType);
-                    self.selectPaymentType(this, self.get('paymentType'));
-                    self.on('change:isSameBillingShippingAddress', function (model, wellIsIt) {
-                        if (wellIsIt) {
-                            billingContact.set(self.parent.get('fulfillmentInfo').get('fulfillmentContact').toJSON(), { silent: true });
-                        }
-                    });
-                    self.on('change:savedPaymentMethodId', self.syncPaymentMethod);
-                    self._cachedDigitalCredits = null;
-
-                    _.bindAll(this, 'applyPayment', 'markComplete');
                 });
             },
             activePayments: function () {

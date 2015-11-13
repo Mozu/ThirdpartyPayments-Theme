@@ -200,7 +200,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             var me = this;
             if (this.model.isExternalCheckoutFlowComplete()) {
                 this.doModelAction('cancelExternalCheckout').then(function () {
-                    me.editing.savedCard = false;
+                    me.editing.savedCard = true;
                     me.render();
                 });
             }

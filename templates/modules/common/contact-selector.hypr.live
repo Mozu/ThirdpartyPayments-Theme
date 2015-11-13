@@ -14,9 +14,6 @@
     
     <div>
         <a href="javascript:;" data-mz-action="beginAddContact">{{labels.addAddress}}</a>
-        {% if  model.updateMode != 'edit'%}
-            <a class="mz-checkoutform-shipping-edit" href="javascript:;" data-mz-action="beginEditContact" data-mz-contact="{{model.contactId}}">{{labels.editAddress}}</a>
-        {% endif %}
 
     </div>
 
