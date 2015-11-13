@@ -16,7 +16,7 @@
                             <dd>{{ model.billingInfo.storeCreditCode }}</dd>
                         {%endif%} 
                     {% else %}
-                    <dt>{{ labels.billingName }}</dt> 
+                    <dt>{{ labels.billingName }}</dt>
                     <dd>{{ model.billingInfo.billingContact.firstName }} {{ model.billingInfo.billingContact.lastNameOrSurname }}</dd>
                     <dt>{{ labels.billingAddress }}</dt>
                     <dd class="mz-addresssummary">{% include "modules/common/address-summary" with model=model.billingInfo.billingContact %}</dd>

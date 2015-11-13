@@ -1,4 +1,4 @@
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 
     var pkg = grunt.file.readJSON('./package.json');
     var semver = require('semver');
@@ -71,74 +71,21 @@ module.exports = function (grunt) {
                     spawn: false
                 }
             },
-            "sync": {
+              "sync": {
                 "files": "<%= mozusync.upload.src %>",
                 "tasks": [
                   "mozusync:upload"
                 ]
-            }
+              }
         },
         "compress": {
-            "build": {
-                "options": {
-                    "archive": "<%= pkg.name %>-<%= pkg.version %>.zip",
-                    "pretty": true
-                },
-                "files": [
-                  {
-                      "src": [
-                        "admin/**/*",
-                        "compiled/**/*",
-                        "labels/**/*",
-                        "resources/**/*",
-                        "scripts/**/*",
-                        "stylesheets/**/*",
-                        "templates/**/*",
-                        "theme.json",
-                        "*thumb.png",
-                        "*thumb.jpg",
-                        "theme-ui.json",
-                        "!*.orig",
-                        "!.inherited"
-                      ],
-                      "dest": "/"
-                  }
-                ]
-            }
-        },
-        "mozutheme": {
-            "check": {},
-            "update": {
-                "versionRange": "<%= pkg.config.baseThemeVersion %>"
-            },
-            "compile": {},
-            "quickcompile": {
-                "command": "compile",
-                "opts": {
-                    "skipminification": true
-                }
-            }
-        },
-        "mozusync": {
+          "build": {
             "options": {
-                "applicationKey": "<%= mozuconfig.workingApplicationKey %>",
-                "context": "<%= mozuconfig %>",
-                "watchAdapters": [
-                  {
-                      "src": "mozusync.upload.src",
-                      "action": "upload"
-                  },
-                  {
-                      "src": "mozusync.del.remove",
-                      "action": "delete"
-                  }
-                ]
+              "archive": "<%= pkg.name %>-<%= pkg.version %>.zip",
+              "pretty": true
             },
-            "upload": {
-                "options": {
-                    "action": "upload",
-                    "noclobber": true
-                },
+            "files": [
+              {
                 "src": [
                   "admin/**/*",
                   "compiled/**/*",
@@ -154,22 +101,75 @@ module.exports = function (grunt) {
                   "!*.orig",
                   "!.inherited"
                 ],
-                "filter": "isFile"
-            },
-            "del": {
-                "options": {
-                    "action": "delete"
-                },
-                "src": "<%= mozusync.upload.src %>",
-                "filter": "isFile",
-                "remove": []
-            },
-            "wipe": {
-                "options": {
-                    "action": "deleteAll"
-                },
-                "src": "<%= mozusync.upload.src %>"
+                "dest": "/"
+              }
+            ]
+          }
+        },
+        "mozutheme": {
+          "check": {},
+          "update": {
+            "versionRange": "<%= pkg.config.baseThemeVersion %>"
+          },
+          "compile": {},
+          "quickcompile": {
+            "command": "compile",
+            "opts": {
+              "skipminification": true
             }
+          }
+        },
+        "mozusync": {
+          "options": {
+            "applicationKey": "<%= mozuconfig.workingApplicationKey %>",
+            "context": "<%= mozuconfig %>",
+            "watchAdapters": [
+              {
+                "src": "mozusync.upload.src",
+                "action": "upload"
+              },
+              {
+                "src": "mozusync.del.remove",
+                "action": "delete"
+              }
+            ]
+          },
+          "upload": {
+            "options": {
+              "action": "upload",
+              "noclobber": true
+            },
+            "src": [
+              "admin/**/*",
+              "compiled/**/*",
+              "labels/**/*",
+              "resources/**/*",
+              "scripts/**/*",
+              "stylesheets/**/*",
+              "templates/**/*",
+              "theme.json",
+              "*thumb.png",
+              "*thumb.jpg",
+              "theme-ui.json",
+              "!*.orig",
+              "!.inherited"
+            ],
+            "filter": "isFile"
+          },
+          "del": {
+            "options": {
+              "action": "delete"
+            },
+            "src": "<%= mozusync.upload.src %>",
+            "filter": "isFile",
+            "remove": []
+          },
+          "wipe": {
+            "options": {
+              "action": "deleteAll"
+            },
+            "src": "<%= mozusync.upload.src %>"
+          }
         }
     });
 
@@ -182,13 +182,13 @@ module.exports = function (grunt) {
     ].forEach(grunt.loadNpmTasks);
 
     grunt.registerTask('default', [
-      'jshint',
+      'jshint', 
       'bower',
       'mozutheme:quickcompile'
     ]); // no bower necessary for now
 
 
-    grunt.registerTask('setver', function () {
+    grunt.registerTask('setver', function() {
 
         var j = grunt.file.readJSON('./theme.json');
         var b = grunt.file.readJSON('./bower.json');

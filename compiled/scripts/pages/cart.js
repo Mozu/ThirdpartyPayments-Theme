@@ -91,14 +91,23 @@ define('modules/models-cart',['underscore', 'modules/backbone-mozu', 'hyprlive',
                 var shippingDiscounts = _.flatten(_.pluck(_.pluck(me.get('items').models, 'attributes'), 'shippingDiscounts'));
 
                 var allDiscounts = me.get('orderDiscounts').concat(productDiscounts).concat(shippingDiscounts);
+                var allCodes = me.get('couponCodes') || [];
                 var lowerCode = code.toLowerCase();
-                if (!allDiscounts || !_.find(allDiscounts, function (d) {
-                    return d.couponCode.toLowerCase() === lowerCode;
-                })) {
+
+                var couponExists = _.find(allCodes, function(couponCode) {
+                    return couponCode.toLowerCase() === lowerCode;
+                });
+                if (!couponExists) {
                     me.trigger('error', {
                         message: Hypr.getLabel('promoCodeError', code)
                     });
                 }
+
+                var couponIsNotApplied = (!allDiscounts || !_.find(allDiscounts, function(d) {
+                    return d.couponCode.toLowerCase() === lowerCode;
+                }));
+                me.set('tentativeCoupon', couponExists && couponIsNotApplied ? code : undefined);
+
                 me.isLoading(false);
             });
         }
@@ -159,7 +168,6 @@ define('modules/preserve-element-through-render',['underscore'], function(_) {
 
   };
 });
-/* globals V: true */
 define('pages/cart',['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/models-cart', 'modules/cart-monitor', 'hyprlivecontext', 'hyprlive', 'modules/preserve-element-through-render'], function (Backbone, _, $, CartModels, CartMonitor, HyprLiveContext, Hypr, preserveElement) {
     var CartView = Backbone.MozuView.extend({
         templateName: "modules/cart/cart-table",
