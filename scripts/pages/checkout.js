@@ -14,7 +14,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
         },
         amazonShippingAndBilling: function() {
             //isLoading(true);
-            window.location = "/checkout/"+window.order.id+"?isAwsCheckout=true&access_token="+$.deparam().access_token+"&view="+AmazonPay.viewName;
+            window.location = "/checkout/"+window.order.id+"?isAwsCheckout=true&access_token="+window.order.get("fulfillmentInfo").get("data").addressAuthorizationToken+"&view="+AmazonPay.viewName;
         },
         choose: function () {
             var me = this;

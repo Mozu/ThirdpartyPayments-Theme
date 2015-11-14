@@ -17,10 +17,11 @@
       </div>
       {% endif %}
       {% for payment in model.activePayments %}
-        {% if payment.billingInfo.paymentType|lower != "paypalexpress2"  %}
-            <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit">{{ labels.change }}</a>
-          {% else %}
+
+        {% if model.isExternalCheckoutFlowComplete  %}
             <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="cancelExternalCheckout">{{ labels.removePayment }}</a>
+          {% else %}
+            <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit">{{ labels.change }}</a>
         {% endif %}
 
       {% if payment.billingInfo.paymentType == "Check" %}

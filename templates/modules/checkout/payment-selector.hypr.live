@@ -1,6 +1,6 @@
 {% with paymentId|default(0) as paymentId %}
 <div class="mz-l-formfieldgroup mz-paymentselector">
-    {% if model.paymentType == "PayWithAmazon" %}
+    {% if model.isAwsCheckout %}
         <div class="mz-l-formfieldgroup-row mz-l-security-box" >
                     {{ labels.awsPaymentWarning }}
         </div>

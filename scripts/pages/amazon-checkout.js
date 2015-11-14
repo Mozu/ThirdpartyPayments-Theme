@@ -12,14 +12,14 @@ require(["modules/jquery-mozu","modules/backbone-mozu",'modules/editable-view', 
 			});
 
 			this.listenTo(this.model, "awscheckoutcomplete", function(id){
-				window.location = "/checkout/"+id+"?isAwsCheckout=true&access_token="+$.deparam().access_token;
+				window.location = "/checkout/"+id;
 			});
 			
 		},
 		render: function() {
-			AmazonPay.addAddressWidget();
-			AmazonPay.addWalletWidget();
-			$("#continue").removeAttr("disabled");
+			//AmazonPay.addAddressWidget();
+			//AmazonPay.addWalletWidget();
+			//$("#continue").removeAttr("disabled");
 		},
 		setawsOrderData: function(data) {
 			var awsData = { awsReferenceId: data.orderReferenceId, addressAuthorizationToken:$.deparam().access_token};
