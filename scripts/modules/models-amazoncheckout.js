@@ -112,7 +112,7 @@ define([
                     errorHandled = false;
                     //me.messages.add(msg || Hypr.getLabel('unknownError'));
                 me.isLoading(false);
-                error = {
+                var error = {
                         items: [
                             {
                                 message: msg || Hypr.getLabel('unknownError')

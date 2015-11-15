@@ -1,3 +1,4 @@
+/* globals V: true */
 define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/models-cart', 'modules/cart-monitor', 'hyprlivecontext', 'hyprlive', 'modules/preserve-element-through-render','modules/amazonPay'], function (Backbone, _, $, CartModels, CartMonitor, HyprLiveContext, Hypr, preserveElement, AmazonPay) {
     var CartView = Backbone.MozuView.extend({
         templateName: "modules/cart/cart-table",
@@ -97,7 +98,7 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
         var visaCheckoutSettings = HyprLiveContext.locals.siteContext.checkoutSettings.visaCheckout;
         var apiKey = visaCheckoutSettings.apiKey;
         var clientId = visaCheckoutSettings.clientId;
-
+        
         // if this function is being called on init rather than after updating cart total
         if (!model) {
             model = CartModels.Cart.fromCurrent();
@@ -129,15 +130,6 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
 
             });
 
-            // for debugging purposes only. don't use this in production
-            V.on("payment.cancel", function(payment) {
-                console.log({ cancel: JSON.stringify(payment) });
-            });
-
-            // for debugging purposes only. don't use this in production
-            V.on("payment.error", function(payment, error) {
-                console.warn({ error: JSON.stringify(error) });
-            });
         }
 
         // delay V.init() while we wait for MozuView to re-render
