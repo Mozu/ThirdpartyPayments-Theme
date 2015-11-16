@@ -103,9 +103,9 @@
                     <div class="mz-l-stack-section mz-checkout-current-payment mz-checkout-saved-card  mz-checkoutform">
 
                           {% if model.isExternalCheckoutFlowComplete %}
-                            <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="cancelExternalCheckout">{{ labels.removePayment }} 2</a>
+                            <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="cancelExternalCheckout">{{ labels.removePayment }}</a>
                           {% else %}
-                            <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="beginEditingCard">{{ labels.change }} 2</a>
+                            <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="beginEditingCard">{{ labels.change }}</a>
                           {% endif %}
 
                       <p>{{ model.card.paymentOrCardType }} {{ model.card.cardNumberPartOrMask }}
