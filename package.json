@@ -1,21 +1,31 @@
 {
-  "name": "mozu-core-theme",
+  "name": "PayPalExpress-Theme",
   "author": "Volusion, Inc.",
-  "description": "The core storefront theme for Mozu.",
-  "version": "8.0.0-4",
+  "description": "Mozu PayPal Express theme",
+  "version": "9.0.0-0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mozu/PayPalExpress-Theme.git"
+  },
+  "scripts": {
+    "version": "grunt setver && git add -A bower.json"
+  },
   "devDependencies": {
     "grunt": "~0.4",
     "grunt-bower-task": "~0.4",
-    "grunt-contrib-compress": "^0.13.0",
-    "grunt-contrib-jshint": "~0.8",
+    "grunt-contrib-compress": "^0.14.0",
+    "grunt-contrib-jshint": "~0.11",
     "grunt-contrib-watch": "~0.6",
     "grunt-jsonlint": "*",
-    "grunt-mozu-appdev-sync": "^0.5.1",
+    "grunt-mozu-appdev-sync": "^1.0.0",
+    "mozu-theme-helpers": "^1.0.1",
     "semver": "^5.0.1",
-    "thmaa": "^0.10.4"
+    "time-grunt": "^1.2.2",
+    "chalk": "^1.1.1"
   },
   "engines": {
     "node": ">=0.10"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "license": "ISC"
 }
