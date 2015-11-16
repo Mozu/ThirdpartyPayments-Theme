@@ -1152,7 +1152,7 @@ define('modules/models-checkout',[
                 me.runForAllSteps(function() {
                     this.isLoading(true);
                 });
-                order.trigger('beforerefresh');
+                me.trigger('beforerefresh');
                 // void active payments; if there are none then the promise will resolve immediately
                 return api.all.apply(api, _.map(_.filter(me.apiModel.getActivePayments(), function(payment) {
                     return payment.paymentType !== 'StoreCredit' && payment.paymentType !== 'GiftCard';
@@ -1488,18 +1488,18 @@ define('modules/models-checkout',[
                     nonStoreCreditTotal = billingInfo.nonStoreCreditTotal(),
                     requiresFulfillmentInfo = this.get('requiresFulfillmentInfo'),
                     requiresBillingInfo = nonStoreCreditTotal > 0,
-                    currentPayment = this.apiModel.getCurrentPayment();
-                    
-                    if (!this.isMozuCheckout()) {
-                        billingContact.set("address", null);
-                    }
-
+                    currentPayment = this.apiModel.getCurrentPayment(),
                     process = [function() {
                         return order.update({
                             ipAddress: order.get('ipAddress'),
                             shopperNotes: order.get('shopperNotes').toJSON()
                         });
                     }];
+                    
+                    if (!this.isMozuCheckout()) {
+                        billingContact.set("address", null);
+                    }
+
 
                 if (this.isSubmitting) return;
 
@@ -1880,7 +1880,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
                 this.visaCheckoutInitialized = true;
             }
         },
-        updateAcceptsMarketing: function() {
+        updateAcceptsMarketing: function(e) {
             this.model.getOrder().set('acceptsMarketing', $(e.currentTarget).prop('checked'));
         },
         updatePaymentType: function(e) {
@@ -1920,6 +1920,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             this.render();
         },
         cancelExternalCheckout: function () {
+            var me = this;
             this.doModelAction('cancelExternalCheckout').then(function () {
                 me.editing.savedCard = false;
                 me.render();
@@ -2012,23 +2013,23 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
 
             // on success, attach the encoded payment data to the window
             // then call the sdk's api method for digital wallets, via models-checkout's helper
-            V.on("payment.success", function(payment) {
+            window.V.on("payment.success", function(payment) {
                 console.log({ success: payment });
                 me.editing.savedCard = false;
                 me.model.parent.processDigitalWallet('VisaCheckout', payment);
             });
 
             // for debugging purposes only. don't use this in production
-            V.on("payment.cancel", function(payment) {
+            window.V.on("payment.cancel", function(payment) {
                 console.log({ cancel: JSON.stringify(payment) });
             });
 
             // for debugging purposes only. don't use this in production
-            V.on("payment.error", function(payment, error) {
+            window.V.on("payment.error", function(payment, error) {
                 console.warn({ error: JSON.stringify(error) });
             });
 
-            V.init({
+            window.V.init({
                 apikey: apiKey,
                 clientId: clientId,
                 paymentRequest: {

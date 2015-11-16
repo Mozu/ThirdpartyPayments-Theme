@@ -1151,7 +1151,7 @@ define([
                 me.runForAllSteps(function() {
                     this.isLoading(true);
                 });
-                order.trigger('beforerefresh');
+                me.trigger('beforerefresh');
                 // void active payments; if there are none then the promise will resolve immediately
                 return api.all.apply(api, _.map(_.filter(me.apiModel.getActivePayments(), function(payment) {
                     return payment.paymentType !== 'StoreCredit' && payment.paymentType !== 'GiftCard';
@@ -1487,18 +1487,18 @@ define([
                     nonStoreCreditTotal = billingInfo.nonStoreCreditTotal(),
                     requiresFulfillmentInfo = this.get('requiresFulfillmentInfo'),
                     requiresBillingInfo = nonStoreCreditTotal > 0,
-                    currentPayment = this.apiModel.getCurrentPayment();
-                    
-                    if (!this.isMozuCheckout()) {
-                        billingContact.set("address", null);
-                    }
-
+                    currentPayment = this.apiModel.getCurrentPayment(),
                     process = [function() {
                         return order.update({
                             ipAddress: order.get('ipAddress'),
                             shopperNotes: order.get('shopperNotes').toJSON()
                         });
                     }];
+                    
+                    if (!this.isMozuCheckout()) {
+                        billingContact.set("address", null);
+                    }
+
 
                 if (this.isSubmitting) return;
 
