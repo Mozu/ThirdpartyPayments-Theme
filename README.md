@@ -1,6 +1,8 @@
 #PayPal Express Theme Integration for Mozu Core8#
 
-This repository contains the full source files for the Mozu Core8 theme, with the required changes to enable PayPal Express on your Mozu storefront. If you are manually upgrading themes that extend earlier versions of the Mozu Core theme (Core5, Core6, or Core7), you can upgrade your entire theme from this repo.
+This repository is a branch of the PayPalExpress-Theme repository, provided for backwards-compatibility. This repo contains the full source files for the Mozu Core8 theme, with the required changes to enable PayPal Express on your Mozu storefront. 
+
+**Note:** This repo is NOT using the latest version of the Mozu Core theme. If you want to update your Mozu theme to match the latest Core, go to the master PayPalExpress-Theme repository.  
 
 ##File Additions and Changes##
 
