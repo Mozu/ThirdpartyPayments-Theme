@@ -25,7 +25,7 @@ function($,EventBus, Api, hyprlivecontext, _) {
 
 			if (this.sellerId && this.clientId && loadScript) {
 				var self = this;
-				var sandbox = (isSandbox ? "/sandbox" : "");
+				sandbox = (isSandbox ? "/sandbox" : "");
 
 				if (region != "us")
 					sandbox += "/lpa";

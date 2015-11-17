@@ -176,7 +176,7 @@ module.exports = function(grunt) {
      'grunt-contrib-watch',
      'grunt-contrib-compress',
      'grunt-mozu-appdev-sync',
-     'mozu-theme-helpers'
+     'thmaa'
     ].forEach(grunt.loadNpmTasks);
 
     grunt.registerTask('default', [

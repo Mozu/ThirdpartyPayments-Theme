@@ -10,7 +10,7 @@
 
 define(['modules/jquery-mozu', 'modules/api'], function($, api) {
     var PARTIAL_PARAM_NAME = "_mz_partial";
-    
+
     function setPartialTrue(url) {
         var prefixChar = !~url.indexOf('?') ? '?' : '&';
         return url + prefixChar + PARTIAL_PARAM_NAME + "=true";

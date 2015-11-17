@@ -1,4 +1,4 @@
-﻿define([
+define([
     'modules/jquery-mozu',
     'underscore',
     'hyprlive',
@@ -1078,7 +1078,7 @@
                             return _.reduce(steps, function(m, i) { return m + i.stepStatus(); }, '') === 'completecompletecomplete';
                         },
                         isReady = allStepsComplete() && !(paypalCancelled);
-
+                        
                     //Visa checkout payments can be added to order without UIs knowledge. This evaluates and voids the required payments.
                     if (visaCheckoutPayment) {
                         _.each(_.filter(self.apiModel.getActivePayments(), function (payment) {
@@ -1140,7 +1140,7 @@
                 me.runForAllSteps(function() {
                     this.isLoading(true);
                 });
-                me.trigger('beforerefresh');
+                order.trigger('beforerefresh');
                 // void active payments; if there are none then the promise will resolve immediately
                 return api.all.apply(api, _.map(_.filter(me.apiModel.getActivePayments(), function(payment) {
                     return payment.paymentType !== 'StoreCredit' && payment.paymentType !== 'GiftCard';
