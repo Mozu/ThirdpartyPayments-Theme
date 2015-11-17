@@ -1,11 +1,11 @@
 {
-  "name": "mozu-core-theme",
+  "name": "AmazonPay-Theme",
   "author": "Volusion, Inc.",
-  "description": "Amazon Pay Theme for Mozu Core 9",
+  "description": "Mozu PayPal Express theme",
   "version": "9.0.0-0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Mozu/PayWithAmazon-Theme/"
+    "url": "https://github.com/Mozu/PayPalExpress-Theme.git"
   },
   "scripts": {
     "version": "grunt setver && git add -A bower.json"
@@ -21,7 +21,7 @@
     "mozu-theme-helpers": "^1.0.1",
     "semver": "^5.0.1",
     "time-grunt": "^1.2.2",
-	"thmaa": "^0.10.5"
+    "chalk": "^1.1.1"
   },
   "engines": {
     "node": ">=0.10"

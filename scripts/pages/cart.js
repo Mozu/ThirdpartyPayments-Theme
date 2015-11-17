@@ -106,7 +106,7 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
 
             // on success, attach the encoded payment data to the window
             // then turn the cart into an order and advance to checkout
-            V.on("payment.success", function(payment) {
+            window.V.on("payment.success", function(payment) {
                 // payment here is an object, not a string. we'll stringify it later
                 var $form = $('#cartform');
                 
@@ -130,19 +130,19 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
             });
 
             // for debugging purposes only. don't use this in production
-            V.on("payment.cancel", function(payment) {
+            window.V.on("payment.cancel", function(payment) {
                 console.log({ cancel: JSON.stringify(payment) });
             });
 
             // for debugging purposes only. don't use this in production
-            V.on("payment.error", function(payment, error) {
+            window.V.on("payment.error", function(payment, error) {
                 console.warn({ error: JSON.stringify(error) });
             });
         }
 
         // delay V.init() while we wait for MozuView to re-render
         // we could probably listen for a "render" event instead
-        _.delay(V.init, delay, {
+        _.delay(window.V.init, delay, {
             apikey: apiKey,
             clientId: clientId,
             paymentRequest: {

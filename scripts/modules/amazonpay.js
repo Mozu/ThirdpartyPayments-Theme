@@ -25,15 +25,15 @@ function($,EventBus, Api, hyprlivecontext, _) {
 
 			if (this.sellerId && this.clientId && loadScript) {
 				var self = this;
-				sandbox = (isSandbox ? "/sandbox" : "");
+				window.sandbox = (isSandbox ? "/sandbox" : "");
 
 				if (region != "us")
-					sandbox += "/lpa";
+					window.sandbox += "/lpa";
 
-				var payWithAmazonUrl = "https://static-"+regionMappings[region]+".payments-amazon.com/OffAmazonPayments/"+ region +sandbox+"/js/Widgets.js";
+				var payWithAmazonUrl = "https://static-"+regionMappings[region]+".payments-amazon.com/OffAmazonPayments/"+ region + window.sandbox + "/js/Widgets.js";
 
 				window.onAmazonLoginReady = function() {
-					amazon.Login.setClientId(self.clientId); //use clientId
+					window.amazon.Login.setClientId(self.clientId); //use clientId
 				};
 			
 				$.getScript(payWithAmazonUrl).done(function(scrit, textStatus){
@@ -63,14 +63,14 @@ function($,EventBus, Api, hyprlivecontext, _) {
 				redirectUrl += "/cart?cartId="+id+"&isAwsCheckout=true&view="+self.viewName;
 			EventBus.on("aws-script-loaded", function(){
 				var authRequest;
-				OffAmazonPayments.Button("AmazonPayButton", self.sellerId, { //use seller id
+				window.OffAmazonPayments.Button("AmazonPayButton", self.sellerId, { //use seller id
 					type:  self.buttonType,
 					color: self.buttonColor,
 					useAmazonAddressBook: true,
 					size: (!isCart ? "small" : "medium"),
 					authorization: function() {
 						var loginOptions = {scope: "profile postal_code payments:widget payments:shipping_address", popup: self.usePopUp};
-						authRequest = amazon.Login.authorize (loginOptions,redirectUrl);
+						authRequest = window.amazon.Login.authorize (loginOptions,redirectUrl);
 					},
 					onError: function(error) {
 						console.log("AmazonPay widget errorCode: "+error.getErrorCode());
@@ -109,7 +109,7 @@ function($,EventBus, Api, hyprlivecontext, _) {
 			walletData.displayMode = "Read";
 			walletData.amazonOrderReferenceId = awsReferenceId;
 		}
-		new OffAmazonPayments.Widgets.Wallet(walletData).bind(divId);
+		new window.OffAmazonPayments.Widgets.Wallet(walletData).bind(divId);
 
 	}
 
@@ -139,7 +139,7 @@ function($,EventBus, Api, hyprlivecontext, _) {
 			addressWalletData.displayMode = "Read";
 			addressWalletData.amazonOrderReferenceId = awsReferenceId;
 		}
-		new OffAmazonPayments.Widgets.AddressBook(addressWalletData).bind(divId);
+		new window.OffAmazonPayments.Widgets.AddressBook(addressWalletData).bind(divId);
 	}
 	
 });
