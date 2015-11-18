@@ -38,11 +38,18 @@
 				{% else %}
 					{% if refund.payment.paymentType == "PaypalExpress" or refund.payment.paymentType|lower == "paypalexpress2" %}
 						{{ labels.payPal }}
+					{% endif %}
+					{% if refund.payment.paymentType|lower == "paywithamazon" %}
+						{{ labels.payWithAmazon }}
+					{% endif %}
 					{% else %}
 						{% if refund.payment.paymentType == "StoreCredit" %}
 							{{ labels.storeCredit }} {{ refund.payment.billingInfo.storeCreditCode|default("") }}
 						{% endif %}
 					{% endif %}
+				{% endif %}
+				{% if refund.payment.paymentType == "PayWithAmazon" %}
+					{{labels.payWithAmazon}}
 				{% endif %}
 			</td>
 			<td>{{ refund.amount|currency }}</td>

@@ -61,6 +61,7 @@
                         {% if type.grouper == "DigitalCredit" %}{{ labels.digitalCredit }}{% endif %}
                         {% if type.grouper == "Paypal" %}{{ labels.payPal }}{% endif %}
                         {% if type.grouper == "PaypalExpress" %}{{ labels.paypalExpress }}{% endif %}
+                        {% if type.grouper|lower == "paywithamazon" %}{{ labels.payWithAmazon }}{%endif%}
                         {% if type.grouper|lower == "paypalexpress2" %}
                             {{ labels.paypalExpress }}
                         {% endif %} 

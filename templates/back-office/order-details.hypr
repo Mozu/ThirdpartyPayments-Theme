@@ -204,6 +204,9 @@
                                     <td>
                                         {% if payment.paymentType|lower == "paypalexpress2" %}
                                             {{ labels.payPal }}
+                                        {% endif %}
+                                        {% if payment.paymentType|lower == "paywithamazon" %}
+                                            {{ labels.payWithAmazon }}
                                         {% else %}
                                             {{ payment.paymentType }}
                                         {% endif %}

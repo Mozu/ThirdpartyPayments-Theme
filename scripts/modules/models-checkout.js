@@ -12,7 +12,7 @@ define([
     function ($, _, Hypr, Backbone, api, CustomerModels, AddressModels, PaymentMethods, HyprLiveContext) {
 
         var CheckoutStep = Backbone.MozuModel.extend({
-            helpers: ['stepStatus', 'requiresFulfillmentInfo','isMozuCheckout', 'requiresDigitalFulfillmentContact'],
+            helpers: ['stepStatus', 'requiresFulfillmentInfo','isMozuCheckout','isAwsCheckout', 'requiresDigitalFulfillmentContact'],
             // instead of overriding constructor, we are creating
             // a method that only the CheckoutStepView knows to
             // run, so it can run late enough for the parent
@@ -57,6 +57,10 @@ define([
             },
             requiresFulfillmentInfo: function () {
                 return this.getOrder().get('requiresFulfillmentInfo');
+            },
+            isAwsCheckout: function() {
+                var activePayments = this.getOrder().apiModel.getActivePayments();
+                return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });
             },
             isMozuCheckout: function() {
                 var activePayments = this.getOrder().apiModel.getActivePayments();
@@ -837,10 +841,9 @@ define([
                     thereAreActivePayments = activePayments.length > 0,
                     paymentTypeIsCard = activePayments && !!_.findWhere(activePayments, { paymentType: 'CreditCard' }),
                     paymentTypeIsPayPal = activePayments && !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }),
-                    paymentTypeIsPayPalNew = activePayments && !!_.findWhere(activePayments, { paymentType: 'PayPalExpress2' }),
                     balanceNotPositive = this.parent.get('amountRemainingForPayment') <= 0;
 
-                if (this.isMozuCheckout() || paymentTypeIsPayPalNew) return this.stepStatus("complete");
+                if (!this.isMozuCheckout() && activePayments.length > 0) return this.stepStatus("complete");
                 if (paymentTypeIsCard && !Hypr.getThemeSetting('isCvvSuppressed')) return this.stepStatus('incomplete'); // initial state for CVV entry
 
                 if (!fulfillmentComplete) return this.stepStatus('new');
@@ -964,6 +967,8 @@ define([
             },
             applyPayment: function () {
                 var self = this, order = this.getOrder();
+                if (this.get("paymentWorkflow") == "PayWithAmazon")
+                    this.unset("paymentWorkflow");
                 if (this.get('paymentType') === 'PaypalExpress') {
                     this.set(this.getPaypalUrls());
                 } else {
@@ -1557,6 +1562,9 @@ define([
                         });
                     }];
 
+                if (!this.isMozuCheckout()) {
+                    billingContact.set("address", null);
+                }
                 if (this.isSubmitting) return;
 
                 this.isSubmitting = true;
@@ -1568,7 +1576,7 @@ define([
                 this.syncBillingAndCustomerEmail();
                 this.setFulfillmentContactEmail();
 
-                if (nonStoreCreditTotal > 0 && this.validate() && ( currentPayment.paymentWorkflow !== "PayPalExpress2" || this.validate().agreeToTerms)) {
+                if (nonStoreCreditTotal > 0 && this.validate() && ( this.isMozuCheckout() || this.validate().agreeToTerms)) {
                     this.isSubmitting = false;
                     return false;
                 }

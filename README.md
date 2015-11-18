@@ -1,31 +1,45 @@
-#PayPal Express Theme Integration for Mozu Core8#
+#ThirdParty Payment Theme Integration for Mozu Core8#
 
-This repository is a branch of the PayPalExpress-Theme repository, provided for backwards-compatibility. This repository contains the full source files for the Mozu Core8 theme, with the required changes to enable PayPal Express on your Mozu storefront. For your convenience, the full readme for Mozu Core Theme Version 8 is included at the bottom of this file.
+This repository is a branch of the ThirdPartyPayments-Theme repository, provided for backwards-compatibility. This repository contains the full source files for the Mozu Core8 theme, with the required changes to enable PayPal Express & Pay With Amazon on your Mozu storefront. For your convenience, the full readme for Mozu Core Theme Version 8 is included at the bottom of this file.
 
-**Note:** This repo is NOT using the latest version of the Mozu Core theme. If you want to update your Mozu theme to match the latest Core, go to the master PayPalExpress-Theme repository.  
 
 ##File Additions and Changes##
 
-**Note:** Use GitHub’s [Compare Changes](https://help.github.com/articles/comparing-commits-across-time/) functionality to see full diffs of the following files.
+The Pay with Amazon Integration adds the following files:
+* `resources/images/amazonpay60x38.png`
+* `scripts/modules/amazonpay.js`
+* `scripts/modules/eventbus.js`
+* `scripts/pages/amazon-checkout.js`
+* `templates/modules/checkout/amazon-shipping-billing.hypr.live`
+* `templates/pages/amazon-checkout.hypr`
 
 The PayPal Express Integration adds the following files:
 * `scripts/modules/xpressPaypal.js`
 
 And edits the following files:
-* `scripts/modules/models-checkout.js`
-* `scripts/pages/checkout.js`
-* `stylesheets/modules/common/form-step.less`
-* `templates/back-office/packing-slip.hypr`
-* `templates/email/order-confirmation.hypr`
-* `templates/email/order-refund-issued.hypr`
-* `templates/modules/cart/cart-table.hypr.live`
-* `templates/modules/checkout/checkout-payment.hypr.live`
-* `templates/modules/checkout/payment-selector.hypr.live`
-* `templates/modules/checkout/step-payment-info.hypr.live`
-* `templates/modules/checkout/step-shipping-address.hypr.live`
-* `templates/modules/common/email-address-summary.hypr.live`
-* `templates/modules/web-fonts-loader.hypr`
-* `theme.json`
+* `labels/en-US.json`
+* `scripts/pages/cart.js`
+*	`scripts/pages/checkout.js`
+*	`scripts/pages/location.js`
+*	`scripts/pages/product.js`
+*	`stylesheets/modules/cart/cart-table.less`
+*	`stylesheets/modules/common/form-step.less`
+*	`stylesheets/pages/checkout.less`
+*	`templates/back-office/packing-slip.hypr`
+*  `templates/email/order-confirmation.hypr`
+*	`templates/email/order-refund-issued.hypr`
+*	`templates/modules/cart/cart-table.hypr.live`
+*	`templates/modules/checkout/checkout-payment.hypr.live`
+*	`templates/modules/checkout/payment-selector.hypr.live`
+*	`templates/modules/checkout/step-payment-info.hypr.live`
+*	`templates/modules/checkout/step-shipping-address.hypr.live`
+*	`templates/modules/page-header/utility-nav.hypr`
+*	`templates/pages/checkout.hypr`
+*	`package.json`
+*	`theme.json`
+**Note:** Use GitHub’s [Compare Changes](https://help.github.com/articles/comparing-commits-across-time/) functionality to see full diffs of the following files.
+
+
 
 ##Additional Resources
 * [Mozu PayPal Express Integration Using Arc.js](https://github.com/Mozu/PayPal-Express) (Application Repo)
@@ -34,6 +48,18 @@ And edits the following files:
 * [Comparing commits across time](https://help.github.com/articles/comparing-commits-across-time/) (GitHub Help) 
 
 -----------------------------------------------------
+*Content below this line is from Mozu Core theme readme*
+
+Refer to the *Upgrading to Mozu Core Theme Version 8* section below for instructions/best practices for a theme upgrade.
+
+##Additional Resources
+* [Mozu Pay with Amazon Integration Using Arc.js](https://github.com/Mozu/PayWithAmazon) (Application Repo)
+* [Pay with Amazon Configuration Guide](http://mozu.github.io/IntegrationDocuments/PayWithAmazon/Mozu-PayWithAmazon-App.htm) (In-app Documentation)
+* [Mozu Theme Development Quickstart] (http://developer.mozu.com/content/learn/themedev/quickstart/create-your-first-theme.htm) (Mozu Documentation)
+* [Intro to Arc.js](http://developer.mozu.com/content/arcjs/Arcjs_Intro.htm) (Mozu Documentation)
+* [Comparing commits across time](https://help.github.com/articles/comparing-commits-across-time/) (GitHub Help) 
+
+----------------------------------------------------
 *Content below this line is from Mozu Core theme readme*
 
 # Upgraded Mozu Core Theme

@@ -1,4 +1,4 @@
-define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/models-cart', 'modules/cart-monitor', 'hyprlivecontext', 'hyprlive', 'modules/preserve-element-through-render'], function (Backbone, _, $, CartModels, CartMonitor, HyprLiveContext, Hypr, preserveElement) {
+define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/models-cart', 'modules/cart-monitor', 'hyprlivecontext', 'hyprlive', 'modules/preserve-element-through-render','modules/amazonPay'], function (Backbone, _, $, CartModels, CartMonitor, HyprLiveContext, Hypr, preserveElement, AmazonPay) {
     var CartView = Backbone.MozuView.extend({
         templateName: "modules/cart/cart-table",
         initialize: function () {
@@ -15,7 +15,9 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
                     return false;
                 }
             });
+            AmazonPay.init(CartModels.Cart.fromCurrent().id);
 
+            AmazonPay.init(true);
 
             var visaCheckoutSettings = HyprLiveContext.locals.siteContext.checkoutSettings.visaCheckout;
             var pageContext = require.mozuData('pagecontext');
@@ -25,7 +27,7 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
             }
         },
         render: function() {
-            preserveElement(this, ['.v-button', '.p-button'], function() {
+            preserveElement(this, ['.v-button', '.p-button', '#AmazonPayButton'], function() {
                 Backbone.MozuView.prototype.render.call(this);
             });
         },
@@ -169,6 +171,9 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
         window.cartView = cartViews;
 
         CartMonitor.setCount(cartModel.count());
+        
+        if (AmazonPay.isEnabled && cartModel.count() > 0)
+            AmazonPay.addCheckoutButton(cartModel.id, true);
     });
 
 });

@@ -4,9 +4,9 @@
         "defaultLanguage": "en-US",
         "extends": null,
         "isDesktop": true,
-        "isMobile": false,
-        "isTablet": false,
-        "name": "Core8 8.0.0- PayPal Express",
+        "isMobile": true,
+        "isTablet": true,
+        "name": "Core8 8.0.0- ThirdParty Payments",
         "allowProduction": true
     },
     "editors": [

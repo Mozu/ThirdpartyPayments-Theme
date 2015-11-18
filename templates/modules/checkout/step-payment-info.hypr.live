@@ -68,6 +68,16 @@
             </dl>
         </div>
         {% endif %}
+        {% if payment.paymentWorkflow  == "PayWithAmazon"%}
+        
+            {% if model.nonStoreCreditTotal == 0%}
+            <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4> 
+            {% endif %}
+            {% if model.nonStoreCreditTotal > 0%}
+                {% include "modules/checkout/payment-paybyamazon" with model=payment.billingInfo.billingContact%}  
+            {%endif%}
+            {% include "modules/checkout/checkout-digital-credit" %}
+        {%endif%}
         
         {% if payment.billingInfo.paymentType|lower == "paypalexpress2"  %}
             {% if model.nonStoreCreditTotal == 0%}
