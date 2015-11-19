@@ -4,10 +4,10 @@
         "defaultLanguage": "en-US",
         "extends": null,
         "isDesktop": true,
-        "isMobile": true,
-        "isTablet": true,
+        "isMobile": false,
+        "isTablet": false,
         "name": "Core8 8.0.0- ThirdParty Payments",
-        "allowProduction": true
+        "allowProduction": false
     },
     "editors": [
         {
@@ -1062,7 +1062,7 @@
             "displayName": "Deal of the Day",
             "displayTemplate": "catalog/deal-of-the-day",
             "editView": "taco-dealoftheday-widgeteditor",
-            "icon": "/resources/admin/widgets/26_related_products.png",
+            "icon": "/resources/admin/widgets/28_deal_of_the_day.png",
             "id": "deal-of-the-day",
             "validPageTypes": [
                 "*"

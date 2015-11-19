@@ -1,4 +1,4 @@
-define([
+﻿define([
     'modules/jquery-mozu',
     'underscore',
     'hyprlive',
@@ -331,6 +331,9 @@ define([
 
                     fn: "validatePaymentType"
                 },
+                savedPaymentMethodId: {
+                    fn: "validateSavedPaymentMethodId"
+                },
 
                 'billingContact.email': {
                     pattern: 'email',
@@ -354,8 +357,15 @@ define([
               if ((value === "StoreCredit" || value === "GiftCard") && this.nonStoreCreditTotal() > 0 && !payment) return errorMessage;
 
             },
+            validateSavedPaymentMethodId: function (value, attr, computedState) {
+                if (this.get('usingSavedCard')) {
+                    var isValid = this.get('savedPaymentMethodId');
+                    if (!isValid) return Hypr.getLabel('selectASavedCard');
+                }
+
+            },
             helpers: ['acceptsMarketing', 'savedPaymentMethods', 'availableStoreCredits', 'applyingCredit', 'maxCreditAmountToApply',
-                'activeStoreCredits', 'nonStoreCreditTotal', 'activePayments', 'hasSavedCardPayment', 'availableDigitalCredits', 'digitalCreditPaymentTotal', 'isAnonymousShopper', 'visaCheckoutFlowComplete'],
+              'activeStoreCredits', 'nonStoreCreditTotal', 'activePayments', 'hasSavedCardPayment', 'availableDigitalCredits', 'digitalCreditPaymentTotal', 'isAnonymousShopper', 'visaCheckoutFlowComplete'],
             acceptsMarketing: function () {
                 return this.getOrder().get('acceptsMarketing');
             },
@@ -925,16 +935,7 @@ define([
                     this.get('card').set('isVisaCheckout', currentPayment.paymentWorkflow.toLowerCase() === 'visacheckout');
                 }
 
-                // when we are using the saved card, validation is only to make sure we have one selected.
-                var val = null;
-                if (!order.get('billingInfo.usingSavedCard')) {
-                    val = this.validate();
-
-                // the second condition is to make sure that saved credit card is the operation.
-                } else if (order.get('billingInfo.usingSavedCard') && !this.get('savedPaymentMethodId')) {
-                    var missingSavedCardErrorMsg = Hypr.getLabel('selectASavedCard');
-                    val = { 'card.saved': missingSavedCardErrorMsg };
-                }
+                var val = this.validate();
 
                 if (this.nonStoreCreditTotal() > 0 && val) {
                     // display errors:
@@ -980,6 +981,12 @@ define([
                     return order.apiAddPayment().then(function() {
                         var payment = order.apiModel.getCurrentPayment();
                         var modelCard, modelCvv;
+                        var activePayments = order.apiModel.getActivePayments();
+                        var creditCardPayment = activePayments && _.findWhere(activePayments, { paymentType: 'CreditCard' });
+                        //Clear card if no credit card payments exists
+                        if (!creditCardPayment && self.get('card')) {
+                            self.get('card').clear();
+                        }
                         if (payment) {
                             switch (payment.paymentType) {
                                 case 'CreditCard':
@@ -1087,7 +1094,7 @@ define([
                             return _.reduce(steps, function(m, i) { return m + i.stepStatus(); }, '') === 'completecompletecomplete';
                         },
                         isReady = allStepsComplete() && !(paypalCancelled);
-                        
+
                     //Visa checkout payments can be added to order without UIs knowledge. This evaluates and voids the required payments.
                     if (visaCheckoutPayment) {
                         _.each(_.filter(self.apiModel.getActivePayments(), function (payment) {
@@ -1555,7 +1562,7 @@ define([
                         billingContact.set("address", null);
                     }
 
-                    process = [function() {
+                    var process = [function() {
                         return order.update({
                             ipAddress: order.get('ipAddress'),
                             shopperNotes: order.get('shopperNotes').toJSON()
