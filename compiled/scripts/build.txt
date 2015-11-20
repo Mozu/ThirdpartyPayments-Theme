@@ -32,7 +32,7 @@ modules/models-faceting.js
 shim!vendor/bootstrap/js/affix[jquery=jQuery]
 shim!vendor/bootstrap/js/scrollspy[jquery=jQuery]
 modules/scroll-nav.js
-shim!vendor/typeahead.js/typeahead.bundle[modules/jquery-mozu=jQuery]>jQuery
+shim!vendor/typeahead.js/dist/typeahead.bundle[modules/jquery-mozu=jQuery]>jQuery
 modules/search-autocomplete.js
 modules/url-dispatcher.js
 modules/intent-emitter.js

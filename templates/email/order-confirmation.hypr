@@ -1,4 +1,4 @@
-{% extends "email/email" %}
+﻿{% extends "email/email" %}
 
 {% block body-content %}
     <br>
@@ -35,8 +35,7 @@
                     {% if model.billingInfo.paymentType == "CreditCard" %}
                         <b>{{ labels.paymentMethod }}</b>: {{ model.billingInfo.card.paymentOrCardType }} {{ model.billingInfo.card.cardNumberPartOrMask }}
                     {% endif %}
-
-                    {% if model.billingInfo.paymentType == "PaypalExpress" or model.billingInfo.paymentType|lower == "paypalexpress2"  %}
+                    {% if  model.billingInfo.paymentType|lower == "paypalexpress2"  %}
                         <b>{{ labels.paymentMethod }}</b>: {{ labels.paypalExpress }}
                     {% endif %}
                 </td>

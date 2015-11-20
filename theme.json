@@ -6,8 +6,11 @@
     "isDesktop": true,
     "isMobile": true,
     "isTablet": true,
-    "name": "Paypal Express 1.19",
-    "allowProduction": true
+    "name": "Core9",
+    "allowProduction": true,
+    "baseThemeVersion": {
+      "commit": "f4f1ca056d17f483f60e20f3a38dbdf7229eea64"
+    }
   },
   "editors": [
     {
