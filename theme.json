@@ -9,11 +9,7 @@
     "name": "PayWithAmazon Core9",
     "allowProduction": true,
     "baseTheme": "https://github.com/mozu/core-theme.git",
-    "baseThemeChannel": "edge",
-    "baseThemeVersion": {
-      "commit": "7672bddfce63f98b5cd3c12163a83716343bde16",
-      "version": "HEAD"
-    }
+    "baseThemeChannel": "edge"
   },
   "editors": [
     {
