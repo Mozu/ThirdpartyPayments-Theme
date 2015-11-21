@@ -60,6 +60,7 @@
             },
             isMozuCheckout: function() {
                 var activePayments = this.getOrder().apiModel.getActivePayments();
+                if (activePayments && activePayments.length == 0) return true;
                 return (activePayments && (!!_.findWhere(activePayments, { paymentType: 'CreditCard' }) || 
                     !!_.findWhere(activePayments, { paymentType: 'Check' }) || 
                     !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }) || 
@@ -874,7 +875,7 @@
                     paymentTypeIsPayPalNew = activePayments && !!_.findWhere(activePayments, { paymentType: 'PayPalExpress2' }),
                     balanceNotPositive = this.parent.get('amountRemainingForPayment') <= 0;
                  
-                if (paymentTypeIsPayPalNew) return this.stepStatus("complete");
+                if (!this.isMozuCheckout()) return this.stepStatus("complete");
                 if (paymentTypeIsCard && !Hypr.getThemeSetting('isCvvSuppressed')) return this.stepStatus('incomplete'); // initial state for CVV entry
 
                 if (!fulfillmentComplete) return this.stepStatus('new');
@@ -1498,6 +1499,7 @@
             },
             isMozuCheckout: function () {
                 var activePayments = this.apiModel.getActivePayments();
+                if (activePayments && activePayments.length == 0) return true;
                 return (activePayments && (!!_.findWhere(activePayments, { paymentType: 'CreditCard' }) ||
                     !!_.findWhere(activePayments, { paymentType: 'Check' }) ||
                     !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }) ||
@@ -1540,7 +1542,7 @@
                 this.syncBillingAndCustomerEmail();
                 this.setFulfillmentContactEmail();
 
-                if (nonStoreCreditTotal > 0 && this.validate() && ( currentPayment.paymentWorkflow !== "PayPalExpress2" || this.validate().agreeToTerms)) {
+                if (nonStoreCreditTotal > 0 && this.validate() && ( this.isMozuCheckout() || this.validate().agreeToTerms)) {
                     this.isSubmitting = false;
                     return false;
                 }
