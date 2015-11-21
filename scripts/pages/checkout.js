@@ -1,4 +1,3 @@
-/* globals V: true */
 require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu", "modules/models-checkout", "modules/views-messages", "modules/cart-monitor", 'hyprlivecontext', 'modules/editable-view', 'modules/preserve-element-through-render','modules/amazonpay'], function ($, _, Hypr, Backbone, CheckoutModels, messageViewFactory, CartMonitor, HyprLiveContext, EditableView, preserveElements,AmazonPay) {
 
     var CheckoutStepView = EditableView.extend({
@@ -12,9 +11,6 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             _.defer(function () {
                 me.model.next();
             });
-        },
-        cancel: function(){
-            this.model.cancelStep();
         },
         amazonShippingAndBilling: function() {
             //isLoading(true);
@@ -89,12 +85,16 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             'address.addressType',
             'phoneNumbers.home',
             'contactId',
-            'email'
+            'email',
+            'updateMode'
         ],
         renderOnChange: [
             'address.countryCode',
             'contactId'
-        ]
+        ],
+        beginAddContact: function () {
+            this.model.set('contactId', 'new');
+        }
     });
 
     var ShippingInfoView = CheckoutStepView.extend({
@@ -146,7 +146,8 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             'billingContact.address.countryCode',
             'paymentType',
             'isSameBillingShippingAddress',
-            'usingSavedCard'
+            'usingSavedCard',
+            'savedPaymentMethodId'
         ],
         additionalEvents: {
             "change [data-mz-digital-credit-enable]": "enableDigitalCredit",
@@ -159,10 +160,13 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             this.listenTo(this.model, 'orderPayment', function (order, scope) {
                     this.render();
             }, this);
+            this.listenTo(this.model, 'change:savedPaymentMethodId', function (order, scope) {
+                this.render();
+            }, this);
             this.codeEntered = !!this.model.get('digitalCreditCode');
         },
         render: function() {
-            preserveElements(this, ['.v-button', '.p-button','#amazonButonPaymentSection'], function() {
+            preserveElements(this, ['.v-button', '#amazonButonPaymentSection'], function() {
                 CheckoutStepView.prototype.render.apply(this, arguments);
             });
             var status = this.model.stepStatus();
@@ -183,15 +187,20 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             this.model.set('usingSavedCard', e.currentTarget.hasAttribute('data-mz-saved-credit-card'));
             this.model.set('paymentType', newType);
         },
-        beginEditingCard: function() {
+        beginEditingCard: function () {
             var me = this;
-            var isVisaCheckout = this.model.visaCheckoutFlowComplete();
-            if (!isVisaCheckout) {
-            this.editing.savedCard = true;
-            this.render();
-            } else if (window.confirm(Hypr.getLabel('visaCheckoutEditReminder'))) {
-                this.doModelAction('cancelVisaCheckout').then(function() {
-                    me.editing.savedCard = false;
+            if (!this.model.isExternalCheckoutFlowComplete()) {
+                this.editing.savedCard = true;
+                this.render();
+            } else {
+                this.cancelExternalCheckout();
+            }
+        },
+        beginEditingExternalPayment: function () {
+            var me = this;
+            if (this.model.isExternalCheckoutFlowComplete()) {
+                this.doModelAction('cancelExternalCheckout').then(function () {
+                    me.editing.savedCard = true;
                     me.render();
                 });
             }
@@ -207,6 +216,13 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
         cancelApplyCredit: function () {
             this.model.closeApplyCredit();
             this.render();
+        },
+        cancelExternalCheckout: function () {
+            var me = this;
+            this.doModelAction('cancelExternalCheckout').then(function () {
+                me.editing.savedCard = false;
+                me.render();
+            });
         },
         finishApplyCredit: function () {
             var self = this;
@@ -237,7 +253,8 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             var val = $(e.currentTarget).prop('value'),
                 creditCode = $(e.currentTarget).attr('data-mz-credit-code-target');  //target
             if (!creditCode) {
-                throw new Error('checkout.applyDigitalCredit could not find target.');
+                console.log('checkout.applyDigitalCredit could not find target.');
+                return;
             }
             var amtToApply = this.stripNonNumericAndParseFloat(val);
             
@@ -294,11 +311,23 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
 
             // on success, attach the encoded payment data to the window
             // then call the sdk's api method for digital wallets, via models-checkout's helper
-            V.on("payment.success", function(payment) {
+            window.V.on("payment.success", function(payment) {
+                console.log({ success: payment });
                 me.editing.savedCard = false;
                 me.model.parent.processDigitalWallet('VisaCheckout', payment);
             });
-            V.init({
+
+            // for debugging purposes only. don't use this in production
+            window.V.on("payment.cancel", function(payment) {
+                console.log({ cancel: JSON.stringify(payment) });
+            });
+
+            // for debugging purposes only. don't use this in production
+            window.V.on("payment.error", function(payment, error) {
+                console.warn({ error: JSON.stringify(error) });
+            });
+
+            window.V.init({
                 apikey: apiKey,
                 clientId: clientId,
                 paymentRequest: {
@@ -483,8 +512,8 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
 
         checkoutModel.on('complete', function() {
             CartMonitor.setCount(0);
-            if (amazon)
-                amazon.Login.logout();
+            if (window.amazon)
+                window.amazon.Login.logout();
             window.location = "/checkout/" + checkoutModel.get('id') + "/confirmation";
         });
 

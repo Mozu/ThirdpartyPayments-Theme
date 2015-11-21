@@ -1,4 +1,3 @@
-/* globals V: true */
 define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/models-cart', 'modules/cart-monitor', 'hyprlivecontext', 'hyprlive', 'modules/preserve-element-through-render','modules/amazonPay'], function (Backbone, _, $, CartModels, CartMonitor, HyprLiveContext, Hypr, preserveElement, AmazonPay) {
     var CartView = Backbone.MozuView.extend({
         templateName: "modules/cart/cart-table",
@@ -28,7 +27,7 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
             }
         },
         render: function() {
-            preserveElement(this, ['.v-button', '.p-button', '#AmazonPayButton'], function() {
+            preserveElement(this, ['.v-button', '#AmazonPayButton'], function() {
                 Backbone.MozuView.prototype.render.call(this);
             });
         },
@@ -98,7 +97,7 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
         var visaCheckoutSettings = HyprLiveContext.locals.siteContext.checkoutSettings.visaCheckout;
         var apiKey = visaCheckoutSettings.apiKey;
         var clientId = visaCheckoutSettings.clientId;
-        
+
         // if this function is being called on init rather than after updating cart total
         if (!model) {
             model = CartModels.Cart.fromCurrent();
@@ -107,7 +106,7 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
 
             // on success, attach the encoded payment data to the window
             // then turn the cart into an order and advance to checkout
-            V.on("payment.success", function(payment) {
+            window.V.on("payment.success", function(payment) {
                 // payment here is an object, not a string. we'll stringify it later
                 var $form = $('#cartform');
                 
@@ -130,11 +129,20 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
 
             });
 
+            // for debugging purposes only. don't use this in production
+            window.V.on("payment.cancel", function(payment) {
+                console.log({ cancel: JSON.stringify(payment) });
+            });
+
+            // for debugging purposes only. don't use this in production
+            window.V.on("payment.error", function(payment, error) {
+                console.warn({ error: JSON.stringify(error) });
+            });
         }
 
         // delay V.init() while we wait for MozuView to re-render
         // we could probably listen for a "render" event instead
-        _.delay(V.init, delay, {
+        _.delay(window.V.init, delay, {
             apikey: apiKey,
             clientId: clientId,
             paymentRequest: {

@@ -17,9 +17,9 @@ require(["modules/jquery-mozu","modules/backbone-mozu",'modules/editable-view', 
 			
 		},
 		render: function() {
-			/*AmazonPay.addAddressWidget();
-			AmazonPay.addWalletWidget();
-			$("#continue").removeAttr("disabled");*/
+			//AmazonPay.addAddressWidget();
+			//AmazonPay.addWalletWidget();
+			//$("#continue").removeAttr("disabled");
 		},
 		setawsOrderData: function(data) {
 			var awsData = { awsReferenceId: data.orderReferenceId, addressAuthorizationToken:$.deparam().access_token};
@@ -29,7 +29,7 @@ require(["modules/jquery-mozu","modules/backbone-mozu",'modules/editable-view', 
 			window.order.set("fulfillmentInfo", fulfillmentInfo);
 		},
 		redirectToCart: function() {
-			amazon.Login.logout();
+			window.amazon.Login.logout();
 			window.location = document.referrer;
 		},
 		submit: function(){
