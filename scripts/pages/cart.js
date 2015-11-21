@@ -27,7 +27,7 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
             }
         },
         render: function() {
-            preserveElement(this, ['.v-button', '#AmazonPayButton'], function() {
+            preserveElement(this, ['.v-button','.p-button', '#AmazonPayButton'], function() {
                 Backbone.MozuView.prototype.render.call(this);
             });
         },

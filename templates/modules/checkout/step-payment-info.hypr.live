@@ -5,6 +5,7 @@
     {%endif%}
 </h3>
 <div class="mz-formstep-body">
+
     <div class="mz-formstep-summary mz-l-stack">
         {%if model.isExternalCheckoutFlowComplete%}
         <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="cancelExternalCheckout">{{ labels.removePayment }} </a>
@@ -29,10 +30,13 @@
                 </div>
                 <div class="mz-l-stack-section mz-checkout-current-payment mz-checkout-saved-billingaddress">
                     <h4 class="mz-checkoutform-title">{{ labels.billingAddress }}</h4>
+                <h4 class="mz-checkoutform-title">{{ labels.billingAddress }}</h4>
                     <div class="mz-addresssummary">
                         {% include "modules/common/address-summary" with model=model.billingContact %}
                     </div>
                 </div>
+                </div>
+            </div>
                 {% if payment.paymentWorkflow === "VisaCheckout" %}
                 <div>
                     <img alt="This Payment Using Visa Checkout" src="{{pageContext.visaCheckoutButtonUrl}}?size=154&amp;color=neutral&amp;cardBrands={{ payment.card.paymentOrCardType }}"/>
@@ -40,17 +44,26 @@
                 {% endif %}
             </div>
             {% endif %}
-            {% if payment.paymentWorkflow  == "PayWithAmazon"%}
-        
+            {% if payment.paymentWorkflow|lower  == "paywithamazon" || payment.paymentWorkflow|lower  == "paypalexpress2"%}
                 {% if model.nonStoreCreditTotal == 0%}
                 <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4> 
                 {% endif %}
                 {% if model.nonStoreCreditTotal > 0%}
-                {% include "modules/checkout/payment-paybyamazon" with model=payment.billingInfo.billingContact%}  
+                	{% if payment.paymentWorkflow|lower  == "paywithamazon" %}
+                		{% include "modules/checkout/payment-paybyamazon" with model=payment.billingInfo.billingContact%} 
+                	{%endif%}
+                	 {% if payment.paymentWorkflow|lower  == "paypalexpress2" %}
+                		<div class="mz-l-stack-section">
+                    			 <div class="mz-l-formfieldgroup-cell">
+                        			<img alt="PayPal" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png" align="left" width="100px" height="26px" style="margin-right:7px;">
+                    			</div>
+                		</div>  
+            		{%endif%}
+
                 {%endif%}
             {%endif%}
         {% endfor %}
-
+      
 
         <div class="mz-l-stack-section mz-paymentselector-separator mz-checkoutform">
             <p>
@@ -103,8 +116,9 @@
                             </div>
                         </div>
                     </div>
+                   
                 {% endif %}
-
+		 </div>
             {% else %}
 
                 <div class="mz-l-stack-section">

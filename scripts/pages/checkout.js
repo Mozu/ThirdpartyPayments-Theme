@@ -166,7 +166,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             this.codeEntered = !!this.model.get('digitalCreditCode');
         },
         render: function() {
-            preserveElements(this, ['.v-button', '#amazonButonPaymentSection'], function() {
+            preserveElements(this, ['.v-button','.p-button', '#amazonButonPaymentSection'], function() {
                 CheckoutStepView.prototype.render.apply(this, arguments);
             });
             var status = this.model.stepStatus();
@@ -183,10 +183,11 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             this.model.getOrder().set('acceptsMarketing', $(e.currentTarget).prop('checked'));
         },
         updatePaymentType: function(e) {
-            var newType = $(e.currentTarget).val();
+            var newType = $(e.currentTarget).val(); 
             this.model.set('usingSavedCard', e.currentTarget.hasAttribute('data-mz-saved-credit-card'));
             this.model.set('paymentType', newType);
         },
+
         beginEditingCard: function () {
             var me = this;
             if (!this.model.isExternalCheckoutFlowComplete()) {

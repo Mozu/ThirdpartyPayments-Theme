@@ -6,8 +6,8 @@
     "isDesktop": true,
     "isMobile": false,
     "isTablet": false,
-    "name": "Core8 8.0.0- ThirdParty Payments"
-    }
+    "name": "ThirdParty Payments 9.0.0-0",
+    "allowProduction": true
   },
   "editors": [
     {

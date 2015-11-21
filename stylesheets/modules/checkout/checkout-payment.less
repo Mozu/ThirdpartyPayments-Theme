@@ -8,11 +8,6 @@
             font-size: @fontSizeLarger;
         }
     }
-
-
-    &-change, &-done {
-        float: right;
-    }
 }
 
 .mz-paymentselector.mz-l-formfieldgroup {
@@ -78,6 +73,27 @@
 
 .mz-paymentselector-newcreditcard .mz-l-formfieldgroup-cell:first-child label {
     min-width: 155px;
+}
+.mz-formstep-body .mz-paymentselector div.mz-paymentselector-externalworkflows {
+    display: inline-block;
+    margin-top: 10px;
+    .mz-l-formfieldgroup-cell {
+        padding: 0px;
+        > * {
+            margin-right: 10px;
+        }
+    }
+}
+
+.mz-checkoutform-paymentinfo{
+    position:relative;
+
+    .mz-checkout-payment-remove, .mz-checkout-payment-change, .mz-formstep-edit{
+        position: absolute;
+        top: 70px;
+        right: 0px;
+    }
+
 }
 
 .mz-paymentselector .mz-paymentselector-externalworkflows {

@@ -12,7 +12,7 @@ define([
     function ($, _, Hypr, Backbone, api, CustomerModels, AddressModels, PaymentMethods, HyprLiveContext) {
 
         var CheckoutStep = Backbone.MozuModel.extend({
-            helpers: ['stepStatus', 'requiresFulfillmentInfo','isAwsCheckout', 'requiresDigitalFulfillmentContact'],  //
+            helpers: ['stepStatus', 'requiresFulfillmentInfo','isAwsCheckout','isMozuCheckout', 'requiresDigitalFulfillmentContact'],  //
             // instead of overriding constructor, we are creating
             // a method that only the CheckoutStepView knows to
             // run, so it can run late enough for the parent
@@ -61,6 +61,16 @@ define([
             isAwsCheckout: function() {
                 var activePayments = this.getOrder().apiModel.getActivePayments();
                 return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });
+            },
+            isMozuCheckout: function() {
+                var activePayments = this.getOrder().apiModel.getActivePayments();
+                if (activePayments && activePayments.length === 0) return true;
+                return (activePayments && (!!_.findWhere(activePayments, { paymentType: 'CreditCard' }) || 
+                    !!_.findWhere(activePayments, { paymentType: 'Check' }) || 
+                    !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }) || 
+                    !!_.findWhere(activePayments, { paymentType: 'VisaCheckout' }) ||
+                    !!_.findWhere(activePayments, { paymentType: 'StoreCredit' }) ||
+                    !!_.findWhere(activePayments, { paymentType: 'GiftCard' })));
             },
             requiresDigitalFulfillmentContact: function () {
                 return this.getOrder().get('requiresDigitalFulfillmentContact');
@@ -366,11 +376,11 @@ define([
             acceptsMarketing: function () {
                 return this.getOrder().get('acceptsMarketing');
             },
-            visaCheckoutFlowComplete: function() {
-                return this.get('paymentWorkflow') === 'VisaCheckout';
-            },
             isExternalCheckoutFlowComplete: function () {
                 return this.get('paymentWorkflow') !== "Mozu";
+            },
+            visaCheckoutFlowComplete: function() {
+                return this.get('paymentWorkflow') === 'VisaCheckout';
             },
             checkoutFlow: function () {
                 return this.get('paymentWorkflow');
@@ -847,11 +857,11 @@ define([
                 this._cachedDigitalCredits = null;
 
                 _.bindAll(this, 'applyPayment', 'markComplete');
-            },
+            }, 
             selectPaymentType: function(me, newPaymentType) {
                 if ((!me.changed || !me.changed.paymentWorkflow) && !me.get('paymentWorkflow')) {
                     me.set('paymentWorkflow', 'Mozu');
-                }
+                } 
                 me.get('check').selected = newPaymentType === 'Check';
                 me.get('card').selected = newPaymentType === 'CreditCard';
             },
@@ -867,8 +877,8 @@ define([
                     thereAreActivePayments = activePayments.length > 0,
                     paymentTypeIsCard = activePayments && !!_.findWhere(activePayments, { paymentType: 'CreditCard' }),
                     balanceNotPositive = this.parent.get('amountRemainingForPayment') <= 0;
-
-                if (this.isAwsCheckout()) return this.stepStatus("complete");
+                 
+                 if (!this.isMozuCheckout()) return this.stepStatus("complete");
                 if (paymentTypeIsCard && !Hypr.getThemeSetting('isCvvSuppressed')) return this.stepStatus('incomplete'); // initial state for CVV entry
 
                 if (!fulfillmentComplete) return this.stepStatus('new');
@@ -1468,11 +1478,16 @@ define([
             isSavingNewCustomer: function() {
                 return this.get('createAccount') && !this.customerCreated;
             },
-            isAwsCheckout: function() {
+            isMozuCheckout: function () {
                 var activePayments = this.apiModel.getActivePayments();
-                return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });
+                if (activePayments && activePayments.length === 0) return true;
+                return (activePayments && (!!_.findWhere(activePayments, { paymentType: 'CreditCard' }) ||
+                    !!_.findWhere(activePayments, { paymentType: 'Check' }) ||
+                    !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }) ||
+                    !!_.findWhere(activePayments, { paymentType: 'VisaCheckout' }) ||
+                    !!_.findWhere(activePayments, { paymentType: 'StoreCredit' }) ||
+                    !!_.findWhere(activePayments, { paymentType: 'GiftCard' })));
             },
-
             submit: function () {
                 var order = this,
                     billingInfo = this.get('billingInfo'),
@@ -1491,10 +1506,12 @@ define([
                             shopperNotes: order.get('shopperNotes').toJSON()
                         });
                     }];
+                    
+                    if (!this.isMozuCheckout()) {
+                        billingContact.set("address", null);
+                    }
 
-                if (this.isAwsCheckout()) {
-                    billingContact.set("address", null);
-                }
+
                 if (this.isSubmitting) return;
 
                 this.isSubmitting = true;
@@ -1506,7 +1523,7 @@ define([
                 this.syncBillingAndCustomerEmail();
                 this.setFulfillmentContactEmail();
 
-                if (nonStoreCreditTotal > 0 && this.validate()  && (currentPayment.paymentWorkflow !== "PayWithAmazon" || this.validate().agreeToTerms)) {
+                if (nonStoreCreditTotal > 0 && this.validate()  && (this.isMozuCheckout() || this.validate().agreeToTerms)) {
                     this.isSubmitting = false;
                     return false;
                 }
@@ -1535,7 +1552,7 @@ define([
                 }
 
                 //save contacts
-                if (isAuthenticated || isSavingNewCustomer) {
+                if (this.isMozuCheckout() && (isAuthenticated || isSavingNewCustomer)) {
                     if (!isSameBillingShippingAddress && !isSavingCreditCard) {
                         if (requiresFulfillmentInfo) process.push(this.addShippingContact);
                         if (requiresBillingInfo) process.push(this.addBillingContact);
