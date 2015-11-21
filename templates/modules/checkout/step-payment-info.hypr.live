@@ -1,10 +1,15 @@
 <h3 class="mz-formstep-header mz-checkoutform-header">
     {{ labels.paymentInformation }}
+    {%if not model.isExternalCheckoutFlowComplete%}
+    <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit">{{ labels.change }}</a>
+    {%endif%}
 </h3>
 <div class="mz-formstep-body">
 
     <div class="mz-formstep-summary mz-l-stack">
+        {%if model.isExternalCheckoutFlowComplete%}
         <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="cancelExternalCheckout">{{ labels.removePayment }} </a>
+        {% endif %}
 
         {% for payment in model.activePayments %}
         {% if payment.billingInfo.paymentType == "Check" %}

@@ -855,7 +855,7 @@ define('modules/models-checkout',[
                 _.bindAll(this, 'applyPayment', 'markComplete');
             }, 
             selectPaymentType: function(me, newPaymentType) {
-                if (!me.changed || !me.changed.paymentWorkflow) {
+                if ((!me.changed || !me.changed.paymentWorkflow) && !me.get('paymentWorkflow')) {
                     me.set('paymentWorkflow', 'Mozu');
                 } 
                 me.get('check').selected = newPaymentType === 'Check';
