@@ -2,21 +2,41 @@
 module.exports = function (grunt) {
   'use strict';
   var pkg = grunt.file.readJSON('./package.json');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-compress');
+  grunt.loadNpmTasks('grunt-mozu-appdev-sync');
+  grunt.loadNpmTasks('mozu-theme-helpers');
   require('time-grunt')(grunt);
   grunt.initConfig({
-    mozuconfig: grunt.file.exists('./mozu.config.json') ? grunt.file.readJSON('./mozu.config.json') : {},
+    mozuconfig: grunt.file.exists('./mozu.config.json') ?
+      grunt.file.readJSON('./mozu.config.json') : {},
     pkg: pkg,
-    bower: {
-      install: {
-        options: {
-          targetDir: './scripts/vendor',
-          layout: 'byComponent',
-          cleanBowerDir: true,
-          bowerOptions: {
-            production: true,
-            forceLatest: true
+    copy: {
+      packagedeps: {
+        files: [
+          {
+            expand: true,
+            cwd: 'node_modules/',
+            src: Object.keys(pkg.dependencies || {}).map(function(dep) {
+              var depPkg;
+              if (pkg.exportsOverride && pkg.exportsOverride[dep]) {
+                return pkg.exportsOverride[dep].map(function(o) {
+                  return dep + '/' + o;
+                });
+              } else {
+                depPkg = require(dep + '/package.json');
+                if (!depPkg.main) {
+                  try {
+                    depPkg = require(dep + '/bower.json');
+                  } catch(e) {}
+                }
+                return dep + (depPkg.main ? '/' + depPkg.main : '/**/*');
+              }
+            }).concat(['!node_modules/**/*']),
+            dest: 'scripts/vendor/'
           }
-        }
+        ]
       }
     },
     jshint: {
@@ -70,7 +90,7 @@ module.exports = function (grunt) {
               '*thumb.png',
               '*thumb.jpg',
               'theme-ui.json',
-              '!*.orig',
+              '!**/*.orig',
               '!.inherited'
             ],
             dest: '/'
@@ -92,71 +112,83 @@ module.exports = function (grunt) {
         }
       }
     },
-    "mozusync": {
-          "options": {
-            "applicationKey": "<%= mozuconfig.workingApplicationKey %>",
-            "context": "<%= mozuconfig %>",
-            "watchAdapters": [
-              {
-                "src": "mozusync.upload.src",
-                "action": "upload"
-              },
-              {
-                "src": "mozusync.del.remove",
-                "action": "delete"
-              }
-            ]
-          },
-          "upload": {
-            "options": {
-              "action": "upload",
-              "noclobber": true
-            },
-            "src": [
-              "admin/**/*",
-              "compiled/**/*",
-              "labels/**/*",
-              "resources/**/*",
-              "scripts/**/*",
-              "stylesheets/**/*",
-              "templates/**/*",
-              "theme.json",
-              "*thumb.png",
-              "*thumb.jpg",
-              "theme-ui.json",
-              "!*.orig",
-              "!.inherited"
-            ],
-            "filter": "isFile"
-          },
-          "del": {
-            "options": {
-              "action": "delete"
-            },
-            "src": "<%= mozusync.upload.src %>",
-            "filter": "isFile",
-            "remove": []
-          },
-          "wipe": {
-            "options": {
-              "action": "deleteAll"
-            },
-            "src": "<%= mozusync.upload.src %>"
-          }
+    watch: {
+      javascript: {
+        files: [
+          "scripts/**/*.js"
+        ],
+        tasks: [
+          "default"
+        ]
+      },
+      sync: {
+        files: "<%= mozusync.upload.src %>",
+        tasks: [
+          "mozusync:upload"
+        ],
+        options: {
+          spawn: false
         }
+      }
+    },
+    mozusync: {
+      options: {
+        applicationKey: "<%= mozuconfig.workingApplicationKey %>",
+        context: "<%= mozuconfig %>",
+        watchAdapters: [
+          {
+            src: "mozusync.upload.src",
+            action: "upload"
+          },
+          {
+            src: "mozusync.del.remove",
+            action: "delete"
+          }
+        ]
+      },
+      upload: {
+        options: {
+          "action": "upload",
+          "noclobber": true
+        },
+        src: [
+          "admin/**/*",
+          "compiled/**/*",
+          "labels/**/*",
+          "resources/**/*",
+          "packageconfig.xml",
+          "scripts/**/*",
+          "stylesheets/**/*",
+          "templates/**/*",
+          "theme.json",
+          "*thumb.png",
+          "*thumb.jpg",
+          "theme-ui.json",
+          "!**/*.*.orig",
+          "!.inherited"
+        ],
+        filter: "isFile"
+      },
+      del: {
+        options: {
+          action: "delete"
+        },
+        src: "<%= mozusync.upload.src %>",
+        filter: "isFile",
+        remove: []
+      },
+      wipe: {
+        options: {
+          action: "deleteAll"
+        },
+        src: "<%= mozusync.upload.src %>"
+      }
+    }
   });
-
-  ['grunt-bower-task',
-    'grunt-contrib-jshint',
-    'grunt-contrib-watch',
-    'grunt-contrib-compress',
-    'grunt-mozu-appdev-sync',
-    'mozu-theme-helpers'
-  ].forEach(grunt.loadNpmTasks);
 
   grunt.registerTask('build', [
     'jshint:develop',
-    'bower',
+    'copy',
     'mozutheme:quickcompile'
   ]);
 
@@ -166,11 +198,6 @@ module.exports = function (grunt) {
     'compress'
   ]);
 
-  grunt.registerTask('default', ['build']);
+    grunt.registerTask('default', ['build','mozusync:upload','mozutheme:check']);
 
-  grunt.registerTask('setver', function () {
-    var b = grunt.file.readJSON('./bower.json');
-    b.version = pkg.version;
-    grunt.file.write('./bower.json', JSON.stringify(b, null, 4));
-  });
 };

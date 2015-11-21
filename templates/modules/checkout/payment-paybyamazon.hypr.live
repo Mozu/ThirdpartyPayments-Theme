@@ -7,14 +7,5 @@
     </div>
 </div>
 
-<div class="mz-l-stack-section">
-	<div class="mz-formstep-summary">
-    	<strong>{{labels.billingContact}}</strong>
-     </div>
-    <div class="mz-l-formfieldgroup-cell">
-        <p>{{ model.email }}</p>
-    </div>
-</div>
-
 
 

@@ -28,7 +28,6 @@
                      data-mz-credit-code-source="{{ credit.attributes.code }}" 
                      data-mz-credit-balance="{{ credit.attributes.currentBalance }}" 
                      id="enable{{ credit.attributes.code }}"/>
-                      />
           </td>
           <td class="mz-checkout-digitalcredit-cell-code">
             <label class="mz-checkout-digitalcredit-code" for="enable{{ credit.attributes.code }}">
