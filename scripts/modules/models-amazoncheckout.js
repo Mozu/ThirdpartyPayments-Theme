@@ -109,7 +109,8 @@ define([
             },
              onCheckoutError: function (msg) {
                 var me = this,
-                    errorHandled = false;
+                    errorHandled = false,
+                    error = {};
                     //me.messages.add(msg || Hypr.getLabel('unknownError'));
                 me.isLoading(false);
                 error = {
