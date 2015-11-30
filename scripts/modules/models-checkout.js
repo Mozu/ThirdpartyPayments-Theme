@@ -12,7 +12,7 @@
     function ($, _, Hypr, Backbone, api, CustomerModels, AddressModels, PaymentMethods, HyprLiveContext) {
 
         var CheckoutStep = Backbone.MozuModel.extend({
-            helpers: ['stepStatus', 'requiresFulfillmentInfo','isMozuCheckout', 'requiresDigitalFulfillmentContact'],
+            helpers: ['stepStatus', 'requiresFulfillmentInfo','isNonMozuCheckout', 'requiresDigitalFulfillmentContact'],
             // instead of overriding constructor, we are creating
             // a method that only the CheckoutStepView knows to
             // run, so it can run late enough for the parent
@@ -58,15 +58,10 @@
             requiresFulfillmentInfo: function () {
                 return this.getOrder().get('requiresFulfillmentInfo');
             },
-            isMozuCheckout: function() {
+            isNonMozuCheckout: function() {
                 var activePayments = this.getOrder().apiModel.getActivePayments();
-                if (activePayments && activePayments.length == 0) return true;
-                return (activePayments && (!!_.findWhere(activePayments, { paymentType: 'CreditCard' }) || 
-                    !!_.findWhere(activePayments, { paymentType: 'Check' }) || 
-                    !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }) || 
-                    !!_.findWhere(activePayments, { paymentType: 'VisaCheckout' }) ||
-                    !!_.findWhere(activePayments, { paymentType: 'StoreCredit' }) ||
-                    !!_.findWhere(activePayments, { paymentType: 'GiftCard' })));
+                if (activePayments && activePayments.length === 0) return false;
+                return (activePayments && (_.findWhere(activePayments, { paymentType: 'PayPalExpress2' })));
             },
             requiresDigitalFulfillmentContact: function () {
                 return this.getOrder().get('requiresDigitalFulfillmentContact');
@@ -875,7 +870,7 @@
                     paymentTypeIsPayPalNew = activePayments && !!_.findWhere(activePayments, { paymentType: 'PayPalExpress2' }),
                     balanceNotPositive = this.parent.get('amountRemainingForPayment') <= 0;
                  
-                if (!this.isMozuCheckout()) return this.stepStatus("complete");
+                if (this.isNonMozuCheckout()) return this.stepStatus("complete");
                 if (paymentTypeIsCard && !Hypr.getThemeSetting('isCvvSuppressed')) return this.stepStatus('incomplete'); // initial state for CVV entry
 
                 if (!fulfillmentComplete) return this.stepStatus('new');
@@ -1497,15 +1492,10 @@
             isSavingNewCustomer: function() {
                 return this.get('createAccount') && !this.customerCreated;
             },
-            isMozuCheckout: function () {
+            isNonMozuCheckout: function() {
                 var activePayments = this.apiModel.getActivePayments();
-                if (activePayments && activePayments.length == 0) return true;
-                return (activePayments && (!!_.findWhere(activePayments, { paymentType: 'CreditCard' }) ||
-                    !!_.findWhere(activePayments, { paymentType: 'Check' }) ||
-                    !!_.findWhere(activePayments, { paymentType: 'PaypalExpress' }) ||
-                    !!_.findWhere(activePayments, { paymentType: 'VisaCheckout' }) ||
-                    !!_.findWhere(activePayments, { paymentType: 'StoreCredit' }) ||
-                    !!_.findWhere(activePayments, { paymentType: 'GiftCard' })));
+                if (activePayments && activePayments.length === 0) return false;
+                return (activePayments && (_.findWhere(activePayments, { paymentType: 'PayPalExpress2' })));
             },
             submit: function () {
                 var order = this,
@@ -1526,7 +1516,7 @@
                         });
                     }];
                     
-                    if (!this.isMozuCheckout()) {
+                    if (this.isNonMozuCheckout()) {
                         billingContact.set("address", null);
                     }
 
@@ -1542,7 +1532,7 @@
                 this.syncBillingAndCustomerEmail();
                 this.setFulfillmentContactEmail();
 
-                if (nonStoreCreditTotal > 0 && this.validate() && ( this.isMozuCheckout() || this.validate().agreeToTerms)) {
+                if (nonStoreCreditTotal > 0 && this.validate() && ( !this.isNonMozuCheckout() || this.validate().agreeToTerms)) {
                     this.isSubmitting = false;
                     return false;
                 }
@@ -1571,7 +1561,7 @@
                 }
 
                 //save contacts
-                if (this.isMozuCheckout() && (isAuthenticated || isSavingNewCustomer)) {
+                if (!this.isNonMozuCheckout() && (isAuthenticated || isSavingNewCustomer)) {
                     if (!isSameBillingShippingAddress && !isSavingCreditCard) {
                         if (requiresFulfillmentInfo) process.push(this.addShippingContact);
                         if (requiresBillingInfo) process.push(this.addBillingContact);

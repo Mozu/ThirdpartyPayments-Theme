@@ -13,38 +13,35 @@
 
         {% for payment in model.activePayments %}
         {% if payment.billingInfo.paymentType == "Check" %}
-        <div class="mz-l-stack-section mz-checkout-payment  mz-checkoutform">
-            <div class="mz-l-stack-section mz-checkout-current-payment">{{ labels.checkByMail }}</div>
-            <div class="mz-l-stack-section mz-checkout-current-payment mz-checkout-saved-billingaddress">
-                <h4 class="mz-checkoutform-title">{{ labels.billingAddress }}</h4>
-                <div class="mz-addresssummary">
-                    {% include "modules/common/address-summary" with model=model.billingContact %}
+            <div class="mz-l-stack-section mz-checkout-payment  mz-checkoutform">
+                <div class="mz-l-stack-section mz-checkout-current-payment">{{ labels.checkByMail }}</div>
+                <div class="mz-l-stack-section mz-checkout-current-payment mz-checkout-saved-billingaddress">
+                    <h4 class="mz-checkoutform-title">{{ labels.billingAddress }}</h4>
+                    <div class="mz-addresssummary">
+                        {% include "modules/common/address-summary" with model=model.billingContact %}
+                    </div>
                 </div>
-            </div>
-        </div>
-        {% endif %}
-        {% if payment.billingInfo.paymentType == "CreditCard" %}
-        <div class="mz-l-stack-section mz-checkout-payment  mz-checkoutform">
-            <div class="mz-l-stack-section mz-checkout-current-payment">
-                {{ model.card.paymentOrCardType }} {{ model.card.cardNumberPartOrMask }}
-                <br/>{{ labels.expires }} {{ model.card.expireMonth }}/{{ model.card.expireYear }}
-            </div>
-            <div class="mz-l-stack-section mz-checkout-current-payment mz-checkout-saved-billingaddress">
-                <h4 class="mz-checkoutform-title">{{ labels.billingAddress }}</h4>
-                <h4 class="mz-checkoutform-title">{{ labels.billingAddress }}</h4>
-                <div class="mz-addresssummary">
-                    {% include "modules/common/address-summary" with model=model.billingContact %}
-                </div>
-            </div>
-                </div>
-            </div>
-            {% if payment.paymentWorkflow === "VisaCheckout" %}
-            <div>
-                <img alt="This Payment Using Visa Checkout" src="{{pageContext.visaCheckoutButtonUrl}}?size=154&amp;color=neutral&amp;cardBrands={{ payment.card.paymentOrCardType }}"/>
             </div>
             {% endif %}
-        </div>
-        {% endif %}
+            {% if payment.billingInfo.paymentType == "CreditCard" %}
+            <div class="mz-l-stack-section mz-checkout-payment  mz-checkoutform">
+                <div class="mz-l-stack-section mz-checkout-current-payment">
+                    {{ model.card.paymentOrCardType }} {{ model.card.cardNumberPartOrMask }}
+                    <br/>{{ labels.expires }} {{ model.card.expireMonth }}/{{ model.card.expireYear }}
+                </div>
+                <div class="mz-l-stack-section mz-checkout-current-payment mz-checkout-saved-billingaddress">
+                    <h4 class="mz-checkoutform-title">{{ labels.billingAddress }}</h4>
+                    <div class="mz-addresssummary">
+                        {% include "modules/common/address-summary" with model=model.billingContact %}
+                    </div>
+                </div>
+                {% if payment.paymentWorkflow === "VisaCheckout" %}
+                <div>
+                    <img alt="This Payment Using Visa Checkout" src="{{pageContext.visaCheckoutButtonUrl}}?size=154&amp;color=neutral&amp;cardBrands={{ payment.card.paymentOrCardType }}"/>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
         {% if payment.billingInfo.paymentType|lower == "paypalexpress2"  %}
             {% if model.nonStoreCreditTotal == 0%}
                 <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4> 
@@ -92,7 +89,6 @@
                         {% endif %}
                             <p>{{ model.card.paymentOrCardType }} {{ model.card.cardNumberPartOrMask }}
                             <br/>{{ labels.expires }} {{ model.card.expireMonth }}/{{ model.card.expireYear }}</p>
-                            <br/>{{ labels.expires }} {{ model.card.expireMonth }}/{{ model.card.expireYear }}</p>
                         {% if not themeSettings.isCvvSuppressed %}
                             <div class="mz-l-formfieldgroup">
                               <div class="mz-l-formfieldgroup-row mz-payment-credit-card-securitycode-row">
@@ -113,9 +109,8 @@
                             </div>
                         </div>
                     </div>
-                   
                 {% endif %}
-		 </div>
+
             {% else %}
 
                 <div class="mz-l-stack-section">
