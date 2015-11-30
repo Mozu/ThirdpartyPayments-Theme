@@ -12,7 +12,7 @@ define([
     function ($, _, Hypr, Backbone, api, CustomerModels, AddressModels, PaymentMethods, HyprLiveContext) {
 
         var CheckoutStep = Backbone.MozuModel.extend({
-            helpers: ['stepStatus', 'requiresFulfillmentInfo','isAwsCheckout', 'requiresDigitalFulfillmentContact'],  //
+            helpers: ['stepStatus', 'requiresFulfillmentInfo','isAwsCheckout','isNonMozuCheckout',  'requiresDigitalFulfillmentContact'],  //
             // instead of overriding constructor, we are creating
             // a method that only the CheckoutStepView knows to
             // run, so it can run late enough for the parent
@@ -57,6 +57,11 @@ define([
             },
             requiresFulfillmentInfo: function () {
                 return this.getOrder().get('requiresFulfillmentInfo');
+            },
+            isNonMozuCheckout: function() {
+                var activePayments = this.getOrder().apiModel.getActivePayments();
+                if (activePayments && activePayments.length === 0) return false;
+                return (activePayments && (_.findWhere(activePayments, { paymentType: 'PayWithAmazon' })));
             },
             isAwsCheckout: function() {
                 var activePayments = this.getOrder().apiModel.getActivePayments();
@@ -868,7 +873,7 @@ define([
                     paymentTypeIsCard = activePayments && !!_.findWhere(activePayments, { paymentType: 'CreditCard' }),
                     balanceNotPositive = this.parent.get('amountRemainingForPayment') <= 0;
 
-                if (this.isAwsCheckout()) return this.stepStatus("complete");
+                if (this.isNonMozuCheckout()) return this.stepStatus("complete");
                 if (paymentTypeIsCard && !Hypr.getThemeSetting('isCvvSuppressed')) return this.stepStatus('incomplete'); // initial state for CVV entry
 
                 if (!fulfillmentComplete) return this.stepStatus('new');
@@ -1468,11 +1473,15 @@ define([
             isSavingNewCustomer: function() {
                 return this.get('createAccount') && !this.customerCreated;
             },
-            isAwsCheckout: function() {
+            /*isAwsCheckout: function() {
                 var activePayments = this.apiModel.getActivePayments();
                 return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });
+            },*/
+            isNonMozuCheckout: function() {
+                var activePayments = this.apiModel.getActivePayments();
+                if (activePayments && activePayments.length === 0) return false;
+                return (activePayments && (_.findWhere(activePayments, { paymentType: 'PayWithAmazon' })));
             },
-
             submit: function () {
                 var order = this,
                     billingInfo = this.get('billingInfo'),
@@ -1492,7 +1501,7 @@ define([
                         });
                     }];
 
-                if (this.isAwsCheckout()) {
+                if (this.isNonMozuCheckout()) {
                     billingContact.set("address", null);
                 }
                 if (this.isSubmitting) return;
@@ -1506,7 +1515,7 @@ define([
                 this.syncBillingAndCustomerEmail();
                 this.setFulfillmentContactEmail();
 
-                if (nonStoreCreditTotal > 0 && this.validate()  && (currentPayment.paymentWorkflow !== "PayWithAmazon" || this.validate().agreeToTerms)) {
+                if (nonStoreCreditTotal > 0 && this.validate()  && (!this.isNonMozuCheckout() || this.validate().agreeToTerms)) {
                     this.isSubmitting = false;
                     return false;
                 }

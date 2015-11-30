@@ -40,13 +40,13 @@
                 {% endif %}
             </div>
             {% endif %}
-            {% if payment.paymentWorkflow  == "PayWithAmazon"%}
+            {% if payment.paymentWorkflow|lower  == "paywithamazon"%}
         
                 {% if model.nonStoreCreditTotal == 0%}
-                <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4> 
+                    <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4> 
                 {% endif %}
                 {% if model.nonStoreCreditTotal > 0%}
-                {% include "modules/checkout/payment-paybyamazon" with model=payment.billingInfo.billingContact%}  
+                    {% include "modules/checkout/payment-paybyamazon" with model=payment.billingInfo.billingContact%}  
                 {%endif%}
             {%endif%}
         {% endfor %}
