@@ -1,11 +1,11 @@
 {
   "name": "AmazonPay-Theme",
   "author": "Volusion, Inc.",
-  "description": "Mozu PayPal Express theme",
+  "description": "Mozu Pay with Amazon theme",
   "version": "9.0.0-0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Mozu/PayPalExpress-Theme.git"
+    "url": "https://github.com/Mozu/PayWithAmazon-Theme.git"
   },
   "devDependencies": {
     "grunt": "~0.4",
