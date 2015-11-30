@@ -10,7 +10,7 @@
     "allowProduction": true,
     "baseThemeVersion": {
       "commit": "a640118773b24f3c49e5e6a35257446a08856d41",
-      "version": "9.0.1"
+      "version": "9.0.3"
     }
   },
   "editors": [
