@@ -43,7 +43,7 @@
             {% endif %}
             {% if payment.paymentWorkflow|lower  == "paywithamazon" || payment.paymentWorkflow|lower  == "paypalexpress2"%}
                 {% if model.nonStoreCreditTotal == 0%}
-                <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4> 
+                    <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4> 
                 {% endif %}
                 {% if model.nonStoreCreditTotal > 0%}
                 	{% if payment.paymentWorkflow|lower  == "paywithamazon" %}

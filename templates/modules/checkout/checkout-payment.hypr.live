@@ -5,19 +5,21 @@
                     <dt>{{ labels.billingEmail }}</dt>
                     <dd>{{ model.billingInfo.billingContact.email }}</dd>
                   {% endif %}
-                  {% if model.billingInfo.paymentType == "StoreCredit" or model.billingInfo.paymentType == "GiftCard" or model.billingInfo.paymentType == "PayWithAmazon"%}
+                  {% if model.billingInfo.paymentType == "StoreCredit" or model.billingInfo.paymentType == "GiftCard" or model.billingInfo.paymentType == "PayWithAmazon" or model.billingInfo.paymentType|lower == "paypalexpress2" %}
                   	{% if model.billingInfo.paymentType|lower == "paypalexpress2" %}
+                        <dt>Payment Method</dt>
                             <dd>
                                 <img alt="PayPal" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png" align="left" width="100px" height="26px" style="margin-right:7px;">
                             </dd>
                         {%endif%}
-                   {% if model.billingInfo.paymentType == "PayWithAmazon" %}
-                        <dt>Payment Method</dt>
-                        <dd><img src="../../resources/images/amazonpay60x38.png"/></dd>
-                    {% else %}
-                        <dt>{{ labels.digitalCreditCode }}</dt>
-                        <dd>{{ model.billingInfo.storeCreditCode }}</dd>
-                    {%endif%}    
+                       {% if model.billingInfo.paymentType == "PayWithAmazon" %}
+                            <dt>Payment Method</dt>
+                            <dd><img src="../../resources/images/amazonpay60x38.png"/></dd>
+                        {%endif%}
+                        {% if model.billingInfo.paymentType == "StpreCredit" ||  model.billingInfo.paymentType == "GiftCard"%}
+                            <dt>{{ labels.digitalCreditCode }}</dt>
+                            <dd>{{ model.billingInfo.storeCreditCode }}</dd>
+                        {%endif%}    
                     {% else %}
                     <dt>{{ labels.billingName }}</dt>
                     <dd>{{ model.billingInfo.billingContact.firstName }} {{ model.billingInfo.billingContact.lastNameOrSurname }}</dd>

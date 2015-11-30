@@ -58,14 +58,14 @@ define([
             requiresFulfillmentInfo: function () {
                 return this.getOrder().get('requiresFulfillmentInfo');
             },
-            isAwsCheckout: function() {
-                var activePayments = this.getOrder().apiModel.getActivePayments();
-                return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });
-            },
             isNonMozuCheckout: function() {
                 var activePayments = this.getOrder().apiModel.getActivePayments();
                 if (activePayments && activePayments.length === 0) return false;
-                return (activePayments && (_.findWhere(activePayments, { paymentType: 'PayPalExpress2' })));
+                return (activePayments && (_.findWhere(activePayments, { paymentType: 'PayWithAmazon' }) || _.findWhere(activePayments, { paymentType: 'PayPalExpress2' })));
+            },
+            isAwsCheckout: function() {
+                var activePayments = this.getOrder().apiModel.getActivePayments();
+                return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });
             },
             requiresDigitalFulfillmentContact: function () {
                 return this.getOrder().get('requiresDigitalFulfillmentContact');
@@ -1473,10 +1473,14 @@ define([
             isSavingNewCustomer: function() {
                 return this.get('createAccount') && !this.customerCreated;
             },
+            /*isAwsCheckout: function() {
+                var activePayments = this.apiModel.getActivePayments();
+                if (activePayments && activePayments.length === 0) return false;
+            },*/
             isNonMozuCheckout: function() {
                 var activePayments = this.apiModel.getActivePayments();
                 if (activePayments && activePayments.length === 0) return false;
-                return (activePayments && (_.findWhere(activePayments, { paymentType: 'PayPalExpress2' })));
+                return (activePayments && (_.findWhere(activePayments, { paymentType: 'PayWithAmazon' }) || _.findWhere(activePayments, { paymentType: 'PayPalExpress2' })));
             },
             submit: function () {
                 var order = this,
