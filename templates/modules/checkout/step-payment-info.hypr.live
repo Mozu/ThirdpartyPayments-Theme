@@ -30,13 +30,10 @@
                 </div>
                 <div class="mz-l-stack-section mz-checkout-current-payment mz-checkout-saved-billingaddress">
                     <h4 class="mz-checkoutform-title">{{ labels.billingAddress }}</h4>
-                <h4 class="mz-checkoutform-title">{{ labels.billingAddress }}</h4>
                     <div class="mz-addresssummary">
                         {% include "modules/common/address-summary" with model=model.billingContact %}
                     </div>
                 </div>
-                </div>
-            </div>
                 {% if payment.paymentWorkflow === "VisaCheckout" %}
                 <div>
                     <img alt="This Payment Using Visa Checkout" src="{{pageContext.visaCheckoutButtonUrl}}?size=154&amp;color=neutral&amp;cardBrands={{ payment.card.paymentOrCardType }}"/>
@@ -116,9 +113,8 @@
                             </div>
                         </div>
                     </div>
-                   
                 {% endif %}
-		 </div>
+
             {% else %}
 
                 <div class="mz-l-stack-section">
