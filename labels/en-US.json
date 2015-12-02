@@ -80,6 +80,7 @@
   "ccDiscover"           : "Discover", 
   "ccJcb"                : "JCB",
   "payPal"               : "Paypal Express",
+  "payWithAmazon"        : "Pay With Amazon",
   "password"             : "Password",
   "newPassword"          : "New Password",
   "oldPassword"          : "Old Password",

@@ -11,7 +11,7 @@
     "baseTheme": "https://github.com/mozu/core-theme.git",
     "baseThemeChannel": "edge",
     "baseThemeVersion": {
-      "commit": "715462db6b95e75d55a7db88a694f1fe825be742",
+      "commit": "ecdc59a3ef7150c632cff3f4179e72b1534e1959",
       "version": "HEAD"
     }
   },
