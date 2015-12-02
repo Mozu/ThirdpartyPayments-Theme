@@ -9,7 +9,7 @@
     "name": "Mozu PayPal Express theme - Core9",
     "allowProduction": true,
     "baseThemeVersion": {
-      "commit": "a640118773b24f3c49e5e6a35257446a08856d41",
+      "commit": "ecdc59a3ef7150c632cff3f4179e72b1534e1959",
       "version": "9.0.3"
     }
   },
