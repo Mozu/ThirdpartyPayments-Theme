@@ -65,6 +65,7 @@ define([
                     me.trigger('awscheckoutcomplete', me.id);
                     return;
                 }
+                var user = require.mozuData('user');
                  var billingInfo = {
                     "newBillingInfo" : 
                     {   
@@ -72,7 +73,7 @@ define([
                         "paymentWorkflow": "PayWithAmazon",
                         "card" : null,
                         "billingContact" : {
-                            "email": me.get("fulfillmentInfo").fulfillmentContact.email
+                            "email": (user.email !== "" ? user.email : me.get("fulfillmentInfo").fulfillmentContact.email)
                         },
                         "orderId" : me.id,
                         "isSameBillingShippingAddress" : false
