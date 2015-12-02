@@ -30,7 +30,7 @@
                 <td>
                     {% if model.billingInfo.paymentType|lower != "paypalexpress2" || model.billingInfo.paymentType|lower != "paywithamazon" %}
                         <b>{{ labels.billingInformation }}</b>:<br><br>
-                        % include "modules/common/email-address-summary" with model=model.billingInfo.billingContact %}<br><br>
+                        {% include "modules/common/email-address-summary" with model=model.billingInfo.billingContact %}<br><br>
                     {% endif %}
                     {%endif%}
                     {% if  model}billingInfo.paymentType|lower == "paypalexpress2"  %}
