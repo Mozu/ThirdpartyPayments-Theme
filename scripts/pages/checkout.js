@@ -483,8 +483,8 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
 
         checkoutModel.on('complete', function() {
             CartMonitor.setCount(0);
-            if (amazon)
-                amazon.Login.logout();
+            if (window.amazon)
+                window.amazon.Login.logout();
             window.location = "/checkout/" + checkoutModel.get('id') + "/confirmation";
         });
 

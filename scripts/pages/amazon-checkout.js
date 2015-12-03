@@ -29,7 +29,7 @@ require(["modules/jquery-mozu","modules/backbone-mozu",'modules/editable-view', 
 			window.order.set("fulfillmentInfo", fulfillmentInfo);
 		},
 		redirectToCart: function() {
-			amazon.Login.logout();
+			window.amazon.Login.logout();
 			window.location = document.referrer;
 		},
 		submit: function(){
