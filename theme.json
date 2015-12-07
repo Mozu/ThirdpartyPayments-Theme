@@ -6,8 +6,10 @@
     "isDesktop": true,
     "isMobile": false,
     "isTablet": false,
-    "name": "ThirdParty Payments 9.0.0",
+    "name": "ThirdParty Payments 9.0.1",
     "allowProduction": true
+    "baseTheme": "https://github.com/mozu/core-theme.git",
+    "baseThemeChannel": "edge",
   },
   "editors": [
     {
