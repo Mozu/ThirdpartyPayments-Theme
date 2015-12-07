@@ -12,7 +12,7 @@
     "baseThemeChannel": "edge",
     "baseThemeVersion": {
       "commit": "ecdc59a3ef7150c632cff3f4179e72b1534e1959",
-      "version": "9.0.3"
+      "version": "HEAD"
     }
   },
   "editors": [
