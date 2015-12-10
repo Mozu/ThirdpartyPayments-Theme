@@ -28,7 +28,7 @@
            <tr>
 
                 <td>
-                    {% if model.billingInfo.paymentType|lower != "paywithamazon" || model.billingInfo.paymentType|lower != "paypalexpress2"%}
+                    {% if model.billingInfo.paymentType|lower != "paywithamazon" and model.billingInfo.paymentType|lower != "paypalexpress2"%}
                         <b>{{ labels.billingInformation }}</b>:<br><br>
                         {% include "modules/common/email-address-summary" with model=model.billingInfo.billingContact %}<br><br>
                     {%endif%}
