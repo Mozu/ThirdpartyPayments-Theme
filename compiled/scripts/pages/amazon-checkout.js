@@ -1,1 +1,56 @@
-require(["modules/jquery-mozu","modules/backbone-mozu","modules/editable-view","modules/eventbus","underscore","modules/amazonPay","modules/models-amazoncheckout"],function(e,o,n,t,i,a,d){var r=n.extend({templateName:"modules/checkout/amazon-shipping-billing",initialize:function(){t.on("aws-referenceOrder-created",this.setawsOrderData),t.on("aws-card-selected",function(){e("#continue").show()}),this.listenTo(this.model,"awscheckoutcomplete",function(e){window.location="/checkout/"+e})},render:function(){},setawsOrderData:function(o){var n={awsReferenceId:o.orderReferenceId,addressAuthorizationToken:e.deparam().access_token},t=window.order.get("fulfillmentInfo");t.data=n,window.order.set("fulfillmentInfo",t)},redirectToCart:function(){window.amazon.Login.logout(),window.location=document.referrer},submit:function(){this.model.submit()}});e(document).ready(function(){a.init(!1);var o=require.mozuData("checkout"),n=window.order=new d.AwsCheckoutPage(o);window.checkoutView=new r({el:e("#shippingBillingTbl"),model:n,messagesEl:e("[data-mz-message-bar]")}),a.addAddressWidget(),a.addWalletWidget()})});
+require(["modules/jquery-mozu","modules/backbone-mozu",'modules/editable-view', "modules/eventbus","underscore", 
+	"modules/amazonPay","modules/models-amazoncheckout"], 
+	function ($,Backbone, EditableView, EventBus, _, AmazonPay, AmazonCheckoutModels) {
+ 
+
+	var AmazonCheckoutView = EditableView.extend({
+		templateName: 'modules/checkout/amazon-shipping-billing',
+		initialize: function() {
+			EventBus.on("aws-referenceOrder-created", this.setawsOrderData);
+			EventBus.on("aws-card-selected", function() {
+				$("#continue").show();
+			});
+
+			this.listenTo(this.model, "awscheckoutcomplete", function(id){
+				window.location = "/checkout/"+id;
+			});
+			
+		},
+		render: function() {
+			//AmazonPay.addAddressWidget();
+			//AmazonPay.addWalletWidget();
+			//$("#continue").removeAttr("disabled");
+		},
+		setawsOrderData: function(data) {
+			var awsData = { awsReferenceId: data.orderReferenceId, addressAuthorizationToken:$.deparam().access_token};
+			//window.order.addAwsReference(awsData);
+			var fulfillmentInfo = window.order.get("fulfillmentInfo");//.set("data", awsData );
+			fulfillmentInfo.data = awsData;
+			window.order.set("fulfillmentInfo", fulfillmentInfo);
+		},
+		redirectToCart: function() {
+			window.amazon.Login.logout();
+			window.location = document.referrer;
+		},
+		submit: function(){
+			this.model.submit();			
+		}
+	});
+
+
+	$(document).ready(function () {
+		AmazonPay.init(false);
+
+		var checkoutData = require.mozuData('checkout');
+		var checkoutModel = window.order = new AmazonCheckoutModels.AwsCheckoutPage(checkoutData);
+		window.checkoutView =  new AmazonCheckoutView({
+									el: $('#shippingBillingTbl'),
+									model: checkoutModel,
+									messagesEl: $('[data-mz-message-bar]')
+								});
+
+		AmazonPay.addAddressWidget();
+		AmazonPay.addWalletWidget();
+
+	});
+});

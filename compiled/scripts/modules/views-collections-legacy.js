@@ -1,1 +1,85 @@
-define(["modules/jquery-mozu","underscore","hyprlive","modules/backbone-mozu","modules/models-faceting","modules/views-productlists","modules/views-paging"],function(e,a,t,r,n,o,d){function i(i){var l,s={},c=i.$body.data("mz-category"),u=i.$body.data("mz-search");u?(l=new n.SearchResult(i.data),l.setQuery(u)):l=new n.Category(i.data),c&&l.setHierarchy("categoryId",c),a.extend(s,{pagingControls:new d.PagingControls({el:i.$body.find("[data-mz-pagingcontrols]"),model:l}),pageNumbers:new d.PageNumbers({el:i.$body.find("[data-mz-pagenumbers]"),model:l}),pageSort:new d.PageSortView({el:i.$body.find("[data-mz-pagesort]"),model:l}),productList:new o.List({el:i.$body.find("[data-mz-productlist]"),model:l})}),i.$facets.length>0&&(s.facetPanel=new o.FacetingPanel({el:i.$facets,model:l})),r.history.start({pushState:!0,root:window.location.pathname});var g=new r.Router,m=!1;l.on("facetchange",function(e){m||g.navigate(e),m=!1},g),l.on("change:pageSize",l.updateFacets,l),a.invoke(s,"delegateEvents");var h=t.getThemeSetting("defaultPageSize");return g.route("*all","filter",function(){{var t=e.extend({pageSize:h},e.deparam()),r={};l.lastRequest}t.startIndex||(r.resetIndex=!0),l.hierarchyField&&t[l.hierarchyField]!==l.hierarchyValue&&(l.setHierarchy(l.hierarchyField,t[l.hierarchyField]||c),r.force=!0),l.set(a.pick(t,"pageSize","startIndex","facetValueFilter","sortBy"),{silent:!0}),m=!0,l.updateFacets(r)}),s}return{createFacetedCollectionViews:i}});
+/**
+ * Can be used on any Backbone.MozuModel that has had the paging mixin in mixins-paging added to it.
+ */
+define(['modules/jquery-mozu', 'underscore', 'hyprlive', 'modules/backbone-mozu', "modules/models-faceting", "modules/views-productlists", "modules/views-paging"], function($, _, Hypr, Backbone, FacetingModels, ProductListViews, PagingViews) {
+
+    function factory(conf) {
+        var views = {},
+            model,
+            categoryId = conf.$body.data('mz-category'),
+            searchQuery = conf.$body.data('mz-search');
+
+        if (searchQuery) {
+            model = new FacetingModels.SearchResult(conf.data);
+            model.setQuery(searchQuery);
+        } else {
+            model = new FacetingModels.Category(conf.data);
+        }
+        if (categoryId) model.setHierarchy('categoryId', categoryId);
+
+        _.extend(views, {
+            pagingControls: new PagingViews.PagingControls({
+                el: conf.$body.find('[data-mz-pagingcontrols]'),
+                model: model
+            }),
+            pageNumbers: new PagingViews.PageNumbers({
+                el: conf.$body.find('[data-mz-pagenumbers]'),
+                model: model
+            }),
+            pageSort: new PagingViews.PageSortView({
+                el: conf.$body.find('[data-mz-pagesort]'),
+                model: model
+            }),
+            productList: new ProductListViews.List({
+                el: conf.$body.find('[data-mz-productlist]'),
+                model: model
+            })
+        });
+
+        if (conf.$facets.length > 0) {
+            views.facetPanel = new ProductListViews.FacetingPanel({
+                el: conf.$facets,
+                model: model
+            });
+        }
+
+        Backbone.history.start({ pushState: true, root: window.location.pathname });
+        var router = new Backbone.Router();
+
+        var navigating = false;
+
+        model.on('facetchange', function(q) {
+            if (!navigating) {
+                router.navigate(q);
+            }
+            navigating = false;
+        }, router);
+
+        model.on('change:pageSize', model.updateFacets, model);
+
+        _.invoke(views, 'delegateEvents');
+
+        var defaultPageSize = Hypr.getThemeSetting('defaultPageSize');
+        router.route('*all', "filter", function() {
+            var urlParams = $.extend({ pageSize: defaultPageSize }, $.deparam()),
+                options = {},
+                req = model.lastRequest;
+            if (!urlParams.startIndex) options.resetIndex = true;
+            if (model.hierarchyField && (urlParams[model.hierarchyField] !== model.hierarchyValue)) {
+                model.setHierarchy(model.hierarchyField, urlParams[model.hierarchyField] || categoryId);
+                options.force = true;
+            }
+            model.set(_.pick(urlParams, 'pageSize', 'startIndex', 'facetValueFilter', 'sortBy'), { silent: true });
+            navigating = true;
+            model.updateFacets(options);
+        });
+
+        return views;
+
+    }
+
+    return {
+        createFacetedCollectionViews: factory
+    };
+
+});

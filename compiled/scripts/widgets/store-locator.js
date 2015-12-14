@@ -1,1 +1,5 @@
-define(["modules/jquery-mozu"],function(){});
+define(['modules/jquery-mozu'],
+    function($) {
+        
+    }
+);

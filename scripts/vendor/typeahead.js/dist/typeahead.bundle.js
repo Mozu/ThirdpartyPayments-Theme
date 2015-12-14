@@ -6,7 +6,7 @@
 
 (function($) {
     var _ = function() {
-        
+        "use strict";
         return {
             isMsie: function() {
                 return /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
@@ -128,7 +128,7 @@
     }();
     var VERSION = "0.10.5";
     var tokenizers = function() {
-        
+        "use strict";
         return {
             nonword: nonword,
             whitespace: whitespace,
@@ -159,7 +159,7 @@
         }
     }();
     var LruCache = function() {
-        
+        "use strict";
         function LruCache(maxSize) {
             this.maxSize = _.isNumber(maxSize) ? maxSize : 100;
             this.reset();
@@ -226,7 +226,7 @@
         return LruCache;
     }();
     var PersistentStorage = function() {
-        
+        "use strict";
         var ls, methods;
         try {
             ls = window.localStorage;
@@ -306,7 +306,7 @@
         }
     }();
     var Transport = function() {
-        
+        "use strict";
         var pendingRequestsCount = 0, pendingRequests = {}, maxPendingRequests = 6, sharedCache = new LruCache(10);
         function Transport(o) {
             o = o || {};
@@ -393,7 +393,7 @@
         }
     }();
     var SearchIndex = function() {
-        
+        "use strict";
         function SearchIndex(o) {
             o = o || {};
             if (!o.datumTokenizer || !o.queryTokenizer) {
@@ -511,7 +511,7 @@
         }
     }();
     var oParser = function() {
-        
+        "use strict";
         return {
             local: getLocal,
             prefetch: getPrefetch,
@@ -580,7 +580,7 @@
         }
     }();
     (function(root) {
-        
+        "use strict";
         var old, keys;
         old = root.Bloodhound;
         keys = {
@@ -734,7 +734,7 @@
         };
     }();
     var css = function() {
-        
+        "use strict";
         var css = {
             wrapper: {
                 position: "relative",
@@ -796,7 +796,7 @@
         return css;
     }();
     var EventBus = function() {
-        
+        "use strict";
         var namespace = "typeahead:";
         function EventBus(o) {
             if (!o || !o.el) {
@@ -813,7 +813,7 @@
         return EventBus;
     }();
     var EventEmitter = function() {
-        
+        "use strict";
         var splitter = /\s+/, nextTick = getNextTick();
         return {
             onSync: onSync,
@@ -903,7 +903,7 @@
         }
     }();
     var highlight = function(doc) {
-        
+        "use strict";
         var defaults = {
             node: null,
             pattern: null,
@@ -955,7 +955,7 @@
         }
     }(window.document);
     var Input = function() {
-        
+        "use strict";
         var specialKeyCodeMap;
         specialKeyCodeMap = {
             9: "tab",
@@ -1150,7 +1150,7 @@
         }
     }();
     var Dataset = function() {
-        
+        "use strict";
         var datasetKey = "ttDataset", valueKey = "ttValue", datumKey = "ttDatum";
         function Dataset(o) {
             o = o || {};
@@ -1284,7 +1284,7 @@
         }
     }();
     var Dropdown = function() {
-        
+        "use strict";
         function Dropdown(o) {
             var that = this, onSuggestionClick, onSuggestionMouseEnter, onSuggestionMouseLeave;
             o = o || {};
@@ -1444,7 +1444,7 @@
         }
     }();
     var Typeahead = function() {
-        
+        "use strict";
         var attrsKey = "ttAttrs";
         function Typeahead(o) {
             var $menu, $input, $hint;
@@ -1691,7 +1691,7 @@
         }
     }();
     (function() {
-        
+        "use strict";
         var old, typeaheadKey, methods;
         old = $.fn.typeahead;
         typeaheadKey = "ttTypeahead";
