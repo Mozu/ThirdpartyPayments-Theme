@@ -3,11 +3,6 @@
   "version": "9.0.1-1",
   "description": "Third Party payments storefront theme for Mozu extended with PayWithAmazon feature.",
   "author": "Volusion, Inc.",
-<<<<<<< HEAD
-=======
-  "description": "The core storefront theme for Mozu.",
-  "version": "9.0.6",
->>>>>>> basetheme/master
   "repository": {
     "type": "git",
     "url": "https://github.com/Mozu/ThirdpartyPayments-Theme.git"
