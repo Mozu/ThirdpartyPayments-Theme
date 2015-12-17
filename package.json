@@ -2,7 +2,7 @@
   "name": "AmazonPay-Theme",
   "author": "Volusion, Inc.",
   "description": "Mozu Pay with Amazon theme",
-  "version": "9.0.1-1",
+  "version": "9.0.1-2",
   "repository": {
     "type": "git",
     "url": "https://github.com/Mozu/PayWithAmazon-Theme.git"
@@ -13,10 +13,10 @@
     "grunt-contrib-copy": "^0.8.2",
     "grunt-contrib-jshint": "~0.11",
     "grunt-contrib-watch": "~0.6",
-    "grunt-mozu-appdev-sync": "^1.0.0",
-    "mozu-theme-helpers": "^1.0.1",
-    "time-grunt": "^1.2.2",
-    "chalk": "^1.1.1"
+    "grunt-mozu-appdev-sync": "^2.1.0",
+    "grunt-newer": "^1.1.1",
+    "mozu-theme-helpers": "^1.2.2",
+    "time-grunt": "^1.2.2"
   },
   "engines": {
     "node": ">=0.10"

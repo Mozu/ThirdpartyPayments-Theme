@@ -352,11 +352,11 @@ define([
                 check: PaymentMethods.Check
             },
             validatePaymentType: function(value, attr) {
-              var order = this.getOrder(); 
-              var payment = order.apiModel.getCurrentPayment();
-              var errorMessage = Hypr.getLabel('paymentTypeMissing');
-              if (!value) return errorMessage;
-              if ((value === "StoreCredit" || value === "GiftCard") && this.nonStoreCreditTotal() > 0 && !payment) return errorMessage;
+                var order = this.getOrder();
+                var payment = order.apiModel.getCurrentPayment();
+                var errorMessage = Hypr.getLabel('paymentTypeMissing');
+                if (!value) return errorMessage;
+                if ((value === "StoreCredit" || value === "GiftCard") && this.nonStoreCreditTotal() > 0 && !payment) return errorMessage;
 
             },
             validateSavedPaymentMethodId: function (value, attr, computedState) {
@@ -550,6 +550,21 @@ define([
                 return this._cachedDigitalCredits && this._cachedDigitalCredits.length > 0 && this._cachedDigitalCredits;
             },
 
+            refreshBillingInfoAfterAddingStoreCredit: function (order, updatedOrder) {
+                //clearing existing order billing info because information may have been removed (payment info) #68583
+
+                // #73389 only refresh if the payment requirement has changed after adding a store credit.
+                var activePayments = this.activePayments();
+                var hasNonStoreCreditPayment = (_.filter(activePayments, function (item) { return item.paymentType !== 'StoreCredit'; })).length > 0;
+                if ((order.get('amountRemainingForPayment') >= 0 && !hasNonStoreCreditPayment) ||
+                    (order.get('amountRemainingForPayment') < 0 && hasNonStoreCreditPayment)) {
+                    order.get('billingInfo').clear();
+                    order.set(updatedOrder, { silent: true });
+                }
+                this.trigger('orderPayment', updatedOrder, this);
+
+            },
+
             applyDigitalCredit: function (creditCode, creditAmountToApply, isEnabled) {
                 var self = this,
                     order = self.getOrder(),
@@ -612,11 +627,10 @@ define([
                                 
                                 return order.apiAddStoreCredit({
                                     storeCreditCode: creditCode,
-                                    amount: creditAmountToApply
+                                    amount: creditAmountToApply,
+                                    email: self.get('billingContact').get('email')
                                 }).then(function (o) {
-                                    order.get('billingInfo').clear();
-                                    order.set(o.data, { silent: true });
-                                    self.trigger('orderPayment', o.data, self);
+                                    self.refreshBillingInfoAfterAddingStoreCredit(order, o.data);
                                     return o;
                                 });
                             });
@@ -640,10 +654,7 @@ define([
                     amount: creditAmountToApply,
                     email: self.get('billingContact').get('email')
                 }).then(function (o) {
-                    //clearing existing order billing info because information may have been removed (payment info) #68583
-                    order.get('billingInfo').clear();
-                    order.set(o.data, {silent: true});
-                    self.trigger('orderPayment', o.data, self);
+                    self.refreshBillingInfoAfterAddingStoreCredit(order, o.data);
                     return o;
                 });
             },
