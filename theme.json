@@ -6,14 +6,8 @@
     "isDesktop": true,
     "isMobile": false,
     "isTablet": false,
-    "name": "ThirdParty Payments 9.0.1-1",
-    "allowProduction": true,
-    "baseTheme": "https://github.com/mozu/core-theme.git",
-    "baseThemeChannel": "edge",
-    "baseThemeVersion": {
-      "commit": "1a9463ad4a3f7bc47bd6ea845b0e74f7da76ddaa",
-      "version": "HEAD"
-    }
+    "name": "ThirdParty Payments 9.0.1-2",
+    "allowProduction": true
   },
   "editors": [
     {
@@ -661,7 +655,8 @@
     "useDebugScripts": false,
     "useSearchAutocomplete": true,
     "allowCustomerInitiatedReturns": true,
-    "visaCheckoutSdkUrl": "https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js"
+    "visaCheckoutSdkUrl": "https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js",
+    "changePWAShipping" : false
   },
   "widgets": [
     {

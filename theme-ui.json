@@ -238,6 +238,18 @@
                     "allowBlank": false
                 }
             ]
+        },
+        {
+            "xtype": "panel",
+            "title": "Pay With Amazon",
+            "collapsed": false,
+            "items": [
+                {
+                    "xtype": "mz-input-checkbox",
+                    "name": "changePWAShipping",
+                    "fieldLabel": "Allow Customers to change shipping address"
+                }
+            ]
         }
     ]
 }
