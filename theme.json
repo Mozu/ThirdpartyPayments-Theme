@@ -6,7 +6,7 @@
         "isDesktop": true,
         "isMobile": false,
         "isTablet": false,
-        "name": "PayWithAmazon Core8 8.0.2",
+        "name": "PayWithAmazon Core8 8.0.3",
         "allowProduction": false
     },
     "editors": [
@@ -655,7 +655,8 @@
         "useDebugScripts": false,
         "useSearchAutocomplete": true,
         "allowCustomerInitiatedReturns": true,
-        "visaCheckoutSdkUrl": "https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js"
+        "visaCheckoutSdkUrl": "https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js",
+        "changePWAShipping" : false
     },
     "widgets": [
         {
