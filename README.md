@@ -1,6 +1,8 @@
 #ThirdParty Payment Theme Integration for Mozu Core8#
 
-This repository is a branch of the ThirdPartyPayments-Theme repository, provided for backwards-compatibility. This repository contains the full source files for the Mozu Core8 theme, with the required changes to enable PayPal Express & Pay With Amazon on your Mozu storefront. For your convenience, the full readme for Mozu Core Theme Version 8 is included at the bottom of this file.
+This repository is a branch of the PayWithAmazon-Theme repository, provided for backwards-compatibility. This repository contains the full source files for the Mozu Core8 theme, with the required changes to enable Pay with Amazon on your Mozu storefront. For your convenience, the full readme for Mozu Core Theme Version 8 is included at the bottom of this file.
+
+**Note:** This repo is NOT using the latest version of the Mozu Core theme. If you want to update your Mozu theme to match the latest Core, go to the master PayWithAmazon-Theme repository.
 
 
 ##File Additions and Changes##
@@ -9,8 +11,10 @@ The Pay with Amazon Integration adds the following files:
 * `resources/images/amazonpay60x38.png`
 * `scripts/modules/amazonpay.js`
 * `scripts/modules/eventbus.js`
+* `scripts/modules/models-amazoncheckout.js`
 * `scripts/pages/amazon-checkout.js`
 * `templates/modules/checkout/amazon-shipping-billing.hypr.live`
+* `templates/modules/checkout/payment-paybyamazon.hypr.live`
 * `templates/pages/amazon-checkout.hypr`
 
 The PayPal Express Integration adds the following files:
@@ -53,10 +57,9 @@ And edits the following files:
 Refer to the *Upgrading to Mozu Core Theme Version 8* section below for instructions/best practices for a theme upgrade.
 
 ##Additional Resources
-* [Mozu Pay with Amazon Integration Using Arc.js](https://github.com/Mozu/PayWithAmazon) (Application Repo)
 * [Pay with Amazon Configuration Guide](http://mozu.github.io/IntegrationDocuments/PayWithAmazon/Mozu-PayWithAmazon-App.htm) (In-app Documentation)
-* [Mozu Theme Development Quickstart] (http://developer.mozu.com/content/learn/themedev/quickstart/create-your-first-theme.htm) (Mozu Documentation)
-* [Intro to Arc.js](http://developer.mozu.com/content/arcjs/Arcjs_Intro.htm) (Mozu Documentation)
+* [Mozu Theme Development Quickstart](http://developer.mozu.com/content/learn/themedev/quickstart/create-your-first-theme.htm) (Mozu Documentation)
+* [Mozu Pay with Amazon Integration Using Arc.js](https://github.com/Mozu/PayWithAmazon) (Application Repo)
 * [Comparing commits across time](https://help.github.com/articles/comparing-commits-across-time/) (GitHub Help) 
 
 ----------------------------------------------------

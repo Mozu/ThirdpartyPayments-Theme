@@ -1,9 +1,12 @@
 ﻿    <h3 class="mz-formstep-header">
         {{ labels.shippingInformation }}
-        {% if model.requiresFulfillmentInfo or model.requiresDigitalFulfillmentContact %}
-          <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit">{{ labels.change }}</a>
+        {% if (model.requiresFulfillmentInfo or model.requiresDigitalFulfillmentContact) %}
+          {%if (model.isAwsCheckout and themeSettings.changePWAShipping) or (not model.isAwsCheckout)%}
+           <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit">{{ labels.change }}</a>
+          {%endif%}
         {% endif %}
-        {% if model.isMozuCheckout == false and model.stepStatus == "incomplete" %}
+
+        {% if model.isAwsCheckout and model.stepStatus == "incomplete" and themeSettings.changePWAShipping%}
           <a href="javascript:;" class="mz-formstep-cancel" data-mz-action="cancel">{{ labels.cancel }}</a>
         {% endif %}
     </h3>

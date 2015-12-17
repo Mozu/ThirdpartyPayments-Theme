@@ -315,12 +315,19 @@
                 if (this.validate()) return false;
                 var me = this;
                 this.isLoading(true);
-                this.getOrder().apiModel.update({ fulfillmentInfo: me.toJSON() }).ensure(function () {
-                    me.provisional = false;
-                    me.isLoading(false);
-                    me.calculateStepStatus();
-                    me.parent.get('billingInfo').calculateStepStatus();
-                });
+                this.getOrder().apiModel.update({ fulfillmentInfo: me.toJSON() })
+                    .then(function(o) {
+                        var billingInfo = me.parent.get('billingInfo');
+                        if (billingInfo) {
+                            billingInfo.loadCustomerDigitalCredits();
+                        }
+                    })
+                    .ensure(function() {
+                        me.provisional = false;
+                        me.isLoading(false);
+                        me.calculateStepStatus();
+                        me.parent.get('billingInfo').calculateStepStatus();
+                    });
             }
         }),
 
@@ -379,6 +386,7 @@
                 return order.apiVoidPayment(currentPayment.id).then(function() {
                     self.clear();
                     self.stepStatus('incomplete');
+                    self.setDefaultPaymentType(self);
                 });
             },
             activePayments: function () {
@@ -399,6 +407,13 @@
                     return sum + credit.amountRequested;
                 }, 0);
                 return me.roundToPlaces(result, 2);
+            },
+            resetAddressDefaults: function () {
+                var billingAddress = this.get('billingContact').get('address');
+                var addressDefaults = billingAddress.defaults;
+                billingAddress.set('countryCode', addressDefaults.countryCode);
+                billingAddress.set('addressType', addressDefaults.addressType);
+                billingAddress.set('candidateValidatedAddresses', addressDefaults.candidateValidatedAddresses);
             },
             savedPaymentMethods: function () {
                 var cards = this.getOrder().get('customer').get('cards').toJSON();
@@ -596,7 +611,8 @@
                                 
                                 return order.apiAddStoreCredit({
                                     storeCreditCode: creditCode,
-                                    amount: creditAmountToApply
+                                    amount: creditAmountToApply,
+                                    email: self.get('billingContact').get('email')
                                 }).then(function (o) {
                                     order.get('billingInfo').clear();
                                     order.set(o.data, { silent: true });
@@ -621,7 +637,8 @@
 
                 return order.apiAddStoreCredit({
                     storeCreditCode: creditCode,
-                    amount: creditAmountToApply
+                    amount: creditAmountToApply,
+                    email: self.get('billingContact').get('email')
                 }).then(function (o) {
                     //clearing existing order billing info because information may have been removed (payment info) #68583
                     order.get('billingInfo').clear();
@@ -796,11 +813,18 @@
             },
             getPaymentTypeFromCurrentPayment: function () {
                 var billingInfoPaymentType = this.get('paymentType'),
+                    billingInfoPaymentWorkflow = this.get('paymentWorkflow'),
                     currentPayment = this.getOrder().apiModel.getCurrentPayment(),
-                    currentPaymentType = currentPayment && currentPayment.billingInfo.paymentType;
+                    currentPaymentType = currentPayment && currentPayment.billingInfo.paymentType,
+                    currentPaymentWorkflow = currentPayment && currentPayment.billingInfo.paymentWorkflow,
+                    currentBillingContact = currentPayment && currentPayment.billingInfo.billingContact,
+                    currentCard = currentPayment && currentPayment.billingInfo.card;
 
-                if (currentPaymentType && currentPaymentType !== billingInfoPaymentType) {
-                    this.set('paymentType', currentPaymentType);
+                if (currentPaymentType && (currentPaymentType !== billingInfoPaymentType || currentPaymentWorkflow !== billingInfoPaymentWorkflow)) {
+                    this.set('paymentType', currentPaymentType, { silent: true });
+                    this.set('paymentWorkflow', currentPaymentWorkflow, { silent: true });
+                    this.set('card', currentCard, { silent: true });
+                    this.set('billingContact', currentBillingContact, { silent: true });
                 }
             },
             edit: function () {
@@ -815,6 +839,10 @@
                     var savedCardId = me.get('card.paymentServiceCardId');
                     me.set('savedPaymentMethodId', savedCardId, { silent: true });
                     me.setSavedPaymentMethod(savedCardId);
+
+                    if (!savedCardId) {
+                        me.setDefaultPaymentType(me);
+                    }
 
                     me.on('change:usingSavedCard', function (me, yes) {
                         if (!yes) {
@@ -844,6 +872,12 @@
                 }
                 me.get('check').selected = newPaymentType === 'Check';
                 me.get('card').selected = newPaymentType === 'CreditCard';
+            },
+            setDefaultPaymentType: function (me) {
+                me.set('paymentType', 'CreditCard');
+                if (me.savedPaymentMethods() && me.savedPaymentMethods().length > 0) {
+                    me.set('usingSavedCard', true);
+                }
             },
             calculateStepStatus: function () {
                 var fulfillmentComplete = this.parent.get('fulfillmentInfo').stepStatus() === 'complete',
@@ -1577,7 +1611,10 @@
                 this.isSubmitting = true;
 
                 if (requiresBillingInfo && !billingContact.isValid()) {
-                    billingContact.set(this.apiModel.getCurrentPayment().billingInfo.billingContact); // reconcile the empty address after we got back from paypal and possibly other situations
+                    // reconcile the empty address after we got back from paypal and possibly other situations.
+                    // also happens with visacheckout ..
+                    var billingInfoFromPayment = this.apiModel.getCurrentPayment().billingInfo;
+                    billingInfo.set(billingInfoFromPayment, { silent: true });
                 }
 
                 this.syncBillingAndCustomerEmail();

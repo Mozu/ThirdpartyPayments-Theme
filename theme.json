@@ -6,7 +6,7 @@
         "isDesktop": true,
         "isMobile": false,
         "isTablet": false,
-        "name": "Core8 8.0.0- ThirdParty Payments",
+        "name": "Core8 8.1.0- ThirdParty Payments",
         "allowProduction": false
     },
     "editors": [
@@ -655,7 +655,8 @@
         "useDebugScripts": false,
         "useSearchAutocomplete": true,
         "allowCustomerInitiatedReturns": true,
-        "visaCheckoutSdkUrl": "https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js"
+        "visaCheckoutSdkUrl": "https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js",
+        "changePWAShipping" : false
     },
     "widgets": [
         {
