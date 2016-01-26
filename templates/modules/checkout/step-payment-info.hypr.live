@@ -6,9 +6,7 @@
 </h3>
 <div class="mz-formstep-body">
     <div class="mz-formstep-summary mz-l-stack">
-        {%if model.isExternalCheckoutFlowComplete%}
-        <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="cancelExternalCheckout">{{ labels.removePayment }} </a>
-        {% endif %}
+       
         {% for payment in model.activePayments %}
             {% if payment.billingInfo.paymentType == "Check" %}
             <div class="mz-l-stack-section mz-checkout-payment  mz-checkoutform">
@@ -41,11 +39,14 @@
             </div>
             {% endif %}
             {% if payment.paymentWorkflow|lower  == "paywithamazon"%}
-        
+               
                 {% if model.nonStoreCreditTotal == 0%}
                     <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4> 
                 {% endif %}
                 {% if model.nonStoreCreditTotal > 0%}
+                      {%if model.isExternalCheckoutFlowComplete%}
+                        <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="cancelExternalCheckout">{{ labels.removePayment }} </a>
+                     {% endif %}
                     {% include "modules/checkout/payment-paybyamazon" with model=payment.billingInfo.billingContact%}  
                 {%endif%}
             {%endif%}
