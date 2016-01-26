@@ -22,14 +22,14 @@
             {% endif %}
             {% if payment.billingInfo.paymentType == "CreditCard" %}
             <div class="mz-l-stack-section mz-checkout-payment  mz-checkoutform">
-            {% if payment.paymentWorkflow === "VisaCheckout" %}
-            <div>
-                <span><img alt="This Payment Using Visa Checkout" src="{{pageContext.visaCheckoutButtonUrl}}?size=154&amp;color=neutral&amp;cardBrands={{ payment.card.paymentOrCardType }}"/></span>
-            </div>
-            {% endif %}
+                {% if payment.paymentWorkflow === "VisaCheckout" %}
+                <div>
+                    <span><img alt="This Payment Using Visa Checkout" src="{{pageContext.visaCheckoutButtonUrl}}?size=154&amp;color=neutral&amp;cardBrands={{ payment.card.paymentOrCardType }}"/></span>
+                </div>
+                {% endif %}
                 <div class="mz-l-stack-section mz-checkout-current-payment">
-                <p>{{ model.card.paymentOrCardType }} {{ model.card.cardNumberPartOrMask }}
-                <br/>{{ labels.expires }} {{ model.card.expireMonth }}/{{ model.card.expireYear }}</p>
+                    <p>{{ model.card.paymentOrCardType }} {{ model.card.cardNumberPartOrMask }}
+                    <br/>{{ labels.expires }} {{ model.card.expireMonth }}/{{ model.card.expireYear }}</p>
                 </div>
                 <div class="mz-l-stack-section mz-checkout-current-payment mz-checkout-saved-billingaddress">
                     <h4 class="mz-checkoutform-title">{{ labels.billingAddress }}</h4>
@@ -44,19 +44,19 @@
                     <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4> 
                 {% endif %}
                 {% if model.nonStoreCreditTotal > 0%}
-                      {%if model.isExternalCheckoutFlowComplete%}
+                    {%if model.isExternalCheckoutFlowComplete%}
                         <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="cancelExternalCheckout">{{ labels.removePayment }} </a>
-                     {% endif %}
+                    {%endif%}
+                    {%if payment.paymentWorkflow|lower  == "paywithamazon" %}
                 		{% include "modules/checkout/payment-paybyamazon" with model=payment.billingInfo.billingContact%} 
                 	{%endif%}
-                	 {% if payment.paymentWorkflow|lower  == "paypalexpress2" %}
+                	{% if payment.paymentWorkflow|lower  == "paypalexpress2" %}
                 		<div class="mz-l-stack-section">
                     			 <div class="mz-l-formfieldgroup-cell">
                         			<img alt="PayPal" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png" align="left" width="100px" height="26px" style="margin-right:7px;">
                     			</div>
                 		</div>  
             		{%endif%}
-
                 {%endif%}
             {%endif%}
         {% endfor %}
