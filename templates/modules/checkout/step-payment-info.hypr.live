@@ -7,9 +7,7 @@
 <div class="mz-formstep-body">
 
     <div class="mz-formstep-summary mz-l-stack">
-        {%if model.isExternalCheckoutFlowComplete%}
-        <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="cancelExternalCheckout">{{ labels.removePayment }} </a>
-        {% endif %}
+      
 
         {% for payment in model.activePayments %}
         {% if payment.billingInfo.paymentType == "Check" %}
@@ -47,6 +45,9 @@
                 <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4> 
             {% endif %}
             {% if model.nonStoreCreditTotal > 0%}
+               {%if model.isExternalCheckoutFlowComplete%}
+                <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="cancelExternalCheckout">{{ labels.removePayment }} </a>
+               {% endif %}
                <div class="mz-l-stack-section">
                     <div class="mz-l-formfieldgroup-cell">
                         <img alt="PayPal" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png" align="left" width="100px" height="26px" style="margin-right:7px;">
