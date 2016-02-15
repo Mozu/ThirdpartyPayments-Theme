@@ -50,29 +50,29 @@ You can use the [Mozu Theme Generator](https://www.npmjs.com/package/generator-m
 When you run the Mozu Theme Generator, the tools create a git remote to the Mozu Core9 repository. In the future, if you run the generator from your local theme directory, the tool will automatically check the Mozu Core theme for updates and offer to merge them for you.
 
 ###Create a Theme in Mozu Dev Center
-1.	In the Dev Center Console, click **Develop > Themes.**
-2.	Click **Create Theme**.
-3.	Note the **Application Key**.
+1.  In the Dev Center Console, click **Develop > Themes.**
+2.  Click **Create Theme**.
+3.  Note the **Application Key**.
 
 ###Install the Generator
-1.	Open a Terminal (OS X) or a Command Prompt (Windows).
-2.	Install the Yeoman command-line tool globally: <br/>
+1.  Open a Terminal (OS X) or a Command Prompt (Windows).
+2.  Install the Yeoman command-line tool globally: <br/>
 `npm install -g yo`
-3.	Install the Grunt command-line tool globally: <br/>
+3.  Install the Grunt command-line tool globally: <br/>
 `npm install -g grunt-cli`
-4.	Install the Mozu Theme Generator globally:<br/>
+4.  Install the Mozu Theme Generator globally:<br/>
 `npm install -g generator-mozu-theme`
 
 ###Run the Generator
-1.	Run the Yeoman generator in a directory that contains your theme files. If you are creating a brand new theme, you can run the tool in an empty directory: <br/>
+1.  Run the Yeoman generator in a directory that contains your theme files. If you are creating a brand new theme, you can run the tool in an empty directory: <br/>
 `yo mozu-theme`<br/>
    - **Note:** If you are installing the theme to a non-production Mozu environment, use: <br/> `yo mozu-theme --internal`
 <br/>The tool will prompt you to select your environment.
-2.	Select **Existing theme from repository**.
-3.	Enter the URL for this repository:<br/> `https://github.com/Mozu/PayWithAmazon-Theme`<br/> and hit **Enter**.
-4.	Follow the prompts to enter your Dev Center Application Key and login information. The generator runs and creates or merges all the PayWithAmazon-Theme files in your theme directory.
-5.	Run `grunt` in your theme directory to upload the theme files to Mozu Dev Center.
-6.	View the theme in Dev Center to see your uploaded files and Install the theme to a sandbox. Apply the theme to see the Pay with Amazon button on your Cart and Checkout pages. <br/>
+2.  Select **Existing theme from repository**.
+3.  Enter the URL for this repository:<br/> `https://github.com/Mozu/PayWithAmazon-Theme`<br/> and hit **Enter**.
+4.  Follow the prompts to enter your Dev Center Application Key and login information. The generator runs and creates or merges all the PayWithAmazon-Theme files in your theme directory.
+5.  Run `grunt` in your theme directory to upload the theme files to Mozu Dev Center.
+6.  View the theme in Dev Center to see your uploaded files and Install the theme to a sandbox. Apply the theme to see the Pay with Amazon button on your Cart and Checkout pages. <br/>
    - **Note:** You must configure Pay with Amazon in your Payment settings in Mozu Admin for the button to appear.
 
 ##Additional Resources
@@ -82,4 +82,3 @@ When you run the Mozu Theme Generator, the tools create a git remote to the Mozu
 * [Mozu Theme Generator 2.0](https://www.npmjs.com/package/generator-mozu-theme) (npm Package)
 
 **Note:** You must log in with your Mozu Developer Account credentials to access content at [https://www.mozu.com/docs/guides](https://www.mozu.com/docs/guides/guides.htm)
-
