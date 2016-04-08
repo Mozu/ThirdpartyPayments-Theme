@@ -85,7 +85,7 @@ define([
                 'email': {
                     pattern: 'email',
                     msg: Hypr.getLabel('emailMissing')
-                } 
+                }
             },
             dataTypes: {
                 contactId: function(val) {
@@ -162,7 +162,7 @@ define([
 
                 var validationObj = this.validate();
 
-                if (validationObj) { 
+                if (validationObj) {
                     Object.keys(validationObj).forEach(function(key){
                         this.trigger('error', {message: validationObj[key]});
                     }, this);
@@ -193,7 +193,7 @@ define([
                         parent.isLoading(false);
                         me.calculateStepStatus();
                         parent.calculateStepStatus();
-                    });                  
+                    });
                 };
 
                 var promptValidatedAddress = function () {
@@ -462,7 +462,7 @@ define([
                         this.set('creditAmountToApply', this.maxCreditAmountToApply());
                     }
                 }
-            },            
+            },
             closeApplyCredit: function () {
                 delete this._applyingCredit;
                 this.unset('selectedCredit');
@@ -498,7 +498,7 @@ define([
                     var currentDate = new Date(),
                         unexpiredDate = new Date(2076, 6, 4);
 
-                    // todo: refactor so conversion & get can re-use - Greg Murray on 2014-07-01 
+                    // todo: refactor so conversion & get can re-use - Greg Murray on 2014-07-01
                     var invalidCredits = customerCredits.filter(function(cred) {
                         var credBalance = cred.get('currentBalance'),
                             credExpDate = cred.get('expirationDate');
@@ -544,7 +544,7 @@ define([
             },
 
             availableDigitalCredits: function () {
-                if (! this._cachedDigitalCredits) { 
+                if (! this._cachedDigitalCredits) {
                     this.loadCustomerDigitalCredits();
                 }
                 return this._cachedDigitalCredits && this._cachedDigitalCredits.length > 0 && this._cachedDigitalCredits;
@@ -585,7 +585,7 @@ define([
                 if (!creditAmountToApply && creditAmountToApply !== 0) {
                     creditAmountToApply = self.getMaxCreditToApply(digitalCredit, self);
                 }
-                
+
                 digitalCredit.set('creditAmountApplied', creditAmountToApply);
                 digitalCredit.set('remainingBalance',  digitalCredit.calculateRemainingBalance());
                 digitalCredit.set('isEnabled', isEnabled);
@@ -624,7 +624,7 @@ define([
                             }
                             return order.apiVoidPayment(sameCreditPayment.id).then(function (o) {
                                 order.set(o.data);
-                                
+
                                 return order.apiAddStoreCredit({
                                     storeCreditCode: creditCode,
                                     amount: creditAmountToApply,
@@ -670,8 +670,8 @@ define([
             },
 
             areNumbersEqual: function(f1, f2) {
-                var epsilon = 0.01; 
-                return (Math.abs(f1 - f2)) < epsilon; 
+                var epsilon = 0.01;
+                return (Math.abs(f1 - f2)) < epsilon;
             },
 
             retrieveDigitalCredit: function (customer, creditCode, me, amountRequested) {
@@ -700,7 +700,7 @@ define([
                     if (validate !== null) {
                         return null;
                     }
-                    
+
                     var maxAmt = me.getMaxCreditToApply(creditModel, me, amountRequested);
                     if (!!amountRequested && amountRequested < maxAmt) {
                         maxAmt = amountRequested;
@@ -878,11 +878,11 @@ define([
                 this._cachedDigitalCredits = null;
 
                 _.bindAll(this, 'applyPayment', 'markComplete');
-            }, 
+            },
             selectPaymentType: function(me, newPaymentType) {
                 if ((!me.changed || !me.changed.paymentWorkflow) && !me.get('paymentWorkflow')) {
                     me.set('paymentWorkflow', 'Mozu');
-                } 
+                }
                 me.get('check').selected = newPaymentType === 'Check';
                 me.get('card').selected = newPaymentType === 'CreditCard';
             },
@@ -898,7 +898,7 @@ define([
                     thereAreActivePayments = activePayments.length > 0,
                     paymentTypeIsCard = activePayments && !!_.findWhere(activePayments, { paymentType: 'CreditCard' }),
                     balanceNotPositive = this.parent.get('amountRemainingForPayment') <= 0;
-                 
+
                 if (this.isNonMozuCheckout()) return this.stepStatus("complete");
                 if (paymentTypeIsCard && !Hypr.getThemeSetting('isCvvSuppressed')) return this.stepStatus('incomplete'); // initial state for CVV entry
 
@@ -919,7 +919,7 @@ define([
                             'lastNameOrSurname',
                             'phoneNumbers'),
                         {
-                            address: obj.billingContact.address ? _.pick(obj.billingContact.address, 
+                            address: obj.billingContact.address ? _.pick(obj.billingContact.address,
                                 'address1',
                                 'address2',
                                 'addressType',
@@ -949,11 +949,11 @@ define([
                 if (payment.paymentWorkflow === 'VisaCheckout') {
                     normalizedLiveBillingInfo.billingContact.address.addressType = normalizedSavedPaymentInfo.billingContact.address.addressType;
                 }
-                
+
                 return !_.isEqual(normalizedSavedPaymentInfo, normalizedLiveBillingInfo);
             },
             submit: function () {
-                
+
                 var order = this.getOrder();
                 // just can't sync these emails right
                 order.syncBillingAndCustomerEmail();
@@ -1042,9 +1042,9 @@ define([
                 this.isLoading(false);
                 var order = this.getOrder();
                 _.defer(function() {
-                    order.isReady(true);    
+                    order.isReady(true);
                 });
-                
+
             },
             toJSON: function(options) {
                 var j = CheckoutStep.prototype.toJSON.apply(this, arguments), loggedInEmail;
@@ -1118,7 +1118,7 @@ define([
                             return _.reduce(steps, function(m, i) { return m + i.stepStatus(); }, '') === 'completecompletecomplete';
                         },
                         isReady = allStepsComplete();
-                        
+
                     //Visa checkout payments can be added to order without UIs knowledge. This evaluates and voids the required payments.
                     if (visaCheckoutPayment) {
                         _.each(_.filter(self.apiModel.getActivePayments(), function (payment) {
@@ -1201,7 +1201,7 @@ define([
             },
             updateShippingInfo: function() {
                 var me = this;
-                this.apiModel.getShippingMethods().then(function (methods) { 
+                this.apiModel.getShippingMethods().then(function (methods) {
                     me.get('fulfillmentInfo').refreshShippingMethods(methods);
                 });
             },
@@ -1276,13 +1276,33 @@ define([
                     errorHandled = false;
                 order.isLoading(false);
                 if (!error || !error.items || error.items.length === 0) {
-                    error = {
-                        items: [
-                            {
-                                message: error.message || Hypr.getLabel('unknownError')
-                            }
-                        ]
-                    };
+                   if (error.message.indexOf('10486') != -1){
+
+                        var siteContext = HyprLiveContext.locals.siteContext,
+                            externalPayment = _.findWhere(siteContext.checkoutSettings.externalPaymentWorkflowSettings, {"name" : "PayPalExpress2"}),
+                            environment = _.findWhere(externalPayment.credentials, {"apiName" : "environment"}),
+                            url = "";
+
+                        if (environment.value.toLowerCase() === "sandbox"){
+                            url = "https://www.sandbox.paypal.com";
+                        }
+                        else{
+                            url = "https://www.paypal.com";
+                        }
+
+                        window.location.href = url + "/cgi-bin/webscr?cmd=_express-checkout&token=" + order.get('payments')[order.get('payments').length-1].externalTransactionId;
+
+                        return;
+                    }
+                    else {
+                        error = {
+                            items: [
+                                {
+                                    message: error.message || Hypr.getLabel('unknownError')
+                                }
+                            ]
+                        };
+                    }
                 }
                 $.each(error.items, function (ix, errorItem) {
                     if (errorItem.name === 'ADD_CUSTOMER_FAILED' && errorItem.message.toLowerCase().indexOf('invalid parameter: password')) {
@@ -1356,7 +1376,7 @@ define([
                 var customer = this.get('customer'),
                     contactInfo = this.get(infoName),
                     process = [function () {
-                      
+
                         // Update contact if a valid contact ID exists
                         if (orderContact.id && orderContact.id > 0) {
                             return customer.apiModel.updateContact(orderContact);
@@ -1372,7 +1392,7 @@ define([
                     }];
                 var contactInfoContactName = contactInfo.get(contactName);
                 var customerContacts = this.get('customer').get('contacts');
-                    
+
                 if (!contactInfoContactName.get('accountId')) {
                     contactInfoContactName.set('accountId', customer.id);
                 }
@@ -1421,13 +1441,13 @@ define([
             isContactModified: function(orderContact, customerContact) {
                 var validContact = orderContact && customerContact && orderContact.id === customerContact.id;
                 var addressChanged = validContact && !_.isEqual(orderContact.address, customerContact.address);
-                //Note: Only home phone is used on the checkout page     
+                //Note: Only home phone is used on the checkout page
                 var phoneChanged = validContact && orderContact.phoneNumbers.home &&
                                     (!customerContact.phoneNumbers.home || orderContact.phoneNumbers.home !== customerContact.phoneNumbers.home);
 
                 //Check whether any of the fields available in the contact UI on checkout page is modified
                 return validContact &&
-                    (addressChanged || phoneChanged || 
+                    (addressChanged || phoneChanged ||
                     orderContact.email !== customerContact.email || orderContact.firstName !== customerContact.firstName ||
                     orderContact.lastNameOrSurname !== customerContact.lastNameOrSurname);
             },
@@ -1528,7 +1548,7 @@ define([
                             shopperNotes: order.get('shopperNotes').toJSON()
                         });
                     }];
-                    
+
                     if (this.isNonMozuCheckout()) {
                         billingContact.set("address", null);
                     }
@@ -1555,7 +1575,7 @@ define([
                 this.isLoading(true);
 
                 if (isSavingNewCustomer) {
-                    process.unshift(this.addNewCustomer); 
+                    process.unshift(this.addNewCustomer);
                 }
 
                 var activePayments = this.apiModel.getActivePayments();
@@ -1587,9 +1607,9 @@ define([
                         process.push(this.addShippingContact);
                     }
                 }
-               
+
                 process.push(/*this.finalPaymentReconcile, */this.apiCheckout);
-                 
+
                 api.steps(process).then(this.onCheckoutSuccess, this.onCheckoutError);
 
             },
