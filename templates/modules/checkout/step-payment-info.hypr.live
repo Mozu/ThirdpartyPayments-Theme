@@ -7,7 +7,7 @@
 <div class="mz-formstep-body">
 
     <div class="mz-formstep-summary mz-l-stack">
-      
+
 
         {% for payment in model.activePayments %}
         {% if payment.billingInfo.paymentType == "Check" %}
@@ -42,7 +42,7 @@
             {% endif %}
         {% if payment.billingInfo.paymentType|lower == "paypalexpress2"  %}
             {% if model.nonStoreCreditTotal == 0%}
-                <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4> 
+                <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4>
             {% endif %}
             {% if model.nonStoreCreditTotal > 0%}
                {%if model.isExternalCheckoutFlowComplete%}
@@ -52,11 +52,18 @@
                     <div class="mz-l-formfieldgroup-cell">
                         <img alt="PayPal" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png" align="left" width="100px" height="26px" style="margin-right:7px;">
                     </div>
-                </div>  
+
+                   {%if model.billingContact.firstName %}
+                    <div class="mz-addresssummary">
+                        {% include "modules/common/address-summary" with model=model.billingContact %}
+                    </div>
+                   {%endif%}
+
+                </div>
             {%endif%}
 
         {% endif %}
-      
+
         {% endfor %}
 
         <div class="mz-l-stack-section mz-paymentselector-separator mz-checkoutform">
@@ -64,18 +71,18 @@
                 {{ labels.billingContact }}: <strong>{{ model.billingContact.email }}</strong>
             </p>
         </div>
-        
+
         <div class="mz-l-stack-section mz-paymentselector-separator mz-checkoutform">
             {% include "modules/checkout/checkout-digital-credit" %}
         </div>
     </div>
 
     <div class="mz-formstep-fields mz-l-stack">
-      
+
         {% if model.nonStoreCreditTotal > 0 %}
 
             {% if model.hasSavedCardPayment %}
-      
+
                 {% if editing.savedCard %}
                     <div class="mz-l-stack-section mz-checkout-current-payment mz-checkout-saved-card-editing">
                         {% include "modules/checkout/payment-selector" %}
@@ -119,7 +126,7 @@
                 </div>
             {% endif %}
         {% else %}
-        
+
             <h4 class="mz-checkout-nopaymentrequired mz-checkoutform">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4>
 
         {% endif %}

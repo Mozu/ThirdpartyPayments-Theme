@@ -1,26 +1,28 @@
-﻿<div class="mz-checkout-payment">
+<div class="mz-checkout-payment">
                 <h4 class="mz-checkout-paymenttitle"><strong>{% if model.amountCollected > 0 %}{{ model.amountCollected|currency }}{% else %}{{ model.amountRequested|currency }}{% endif %}</strong> &mdash; {% if model.billingInfo.paymentType == "Check" %}{{ labels.checkByMail }} {% endif %}{% if model.billingInfo.paymentType|lower == "paypalexpress2" %} {{ labels.payPal }} {% endif %}{% if model.billingInfo.paymentType == "CreditCard" %}{{ labels.creditCard }}{% endif %}{% if model.billingInfo.paymentType == "StoreCredit" or model.billingInfo.paymentType == "GiftCard" %}{{ labels.digitalCredit }}{% endif %}</h4>
                 <dl class="mz-propertylist">
                     {% if model.billingInfo.billingContact.email %}
                         <dt>{{ labels.billingEmail }}</dt>
                         <dd>{{ model.billingInfo.billingContact.email }}</dd>
-                    {% endif %} 
+                    {% endif %}
                     {% if model.billingInfo.paymentType == "StoreCredit" or model.billingInfo.paymentType == "GiftCard" or  model.billingInfo.paymentType|lower == "paypalexpress2" %}
                         <dt>Payment Method</dt>
                         {% if model.billingInfo.paymentType|lower == "paypalexpress2" %}
                             <dd>
                                 <img alt="PayPal" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png" align="left" width="100px" height="26px" style="margin-right:7px;">
                             </dd>
-                        {% else %} 
+                        {% else %}
                             <dt>{{ labels.digitalCreditCode }}</dt>
                             <dd>{{ model.billingInfo.storeCreditCode }}</dd>
-                        {%endif%} 
+                        {%endif%}
                     {% else %}
-                    <dt>{{ labels.billingName }}</dt>
-                    <dd>{{ model.billingInfo.billingContact.firstName }} {{ model.billingInfo.billingContact.lastNameOrSurname }}</dd>
-                    <dt>{{ labels.billingAddress }}</dt>
-                    <dd class="mz-addresssummary">{% include "modules/common/address-summary" with model=model.billingInfo.billingContact %}</dd>
+                        <dt>{{ labels.billingName }}</dt>
+                        <dd>{{ model.billingInfo.billingContact.firstName }} {{ model.billingInfo.billingContact.lastNameOrSurname }}</dd>
                     {% endif %}
+                     {%if model.billingInfo.billingContact.address.address1 !==''%}
+                        <dt>{{ labels.billingAddress }}</dt>
+                        <dd class="mz-addresssummary">{% include "modules/common/address-summary" with model=model.billingInfo.billingContact %}</dd>
+                    {%endif%}
                     {% if model.billingInfo.paymentType == "CreditCard" %}
                     <dt>{{ labels.cardType }}</dt>
                     <dd>{{ model.billingInfo.card.paymentOrCardType }}</dd>

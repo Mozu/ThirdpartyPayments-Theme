@@ -1,4 +1,4 @@
-﻿{% extends "page" %}
+{% extends "page" %}
 
 {% block title-tag-content %}{% firstof pageContext.metaTitle labels.orderConfirmation %} - {% parent %}{% endblock title-tag-content %}
 
@@ -11,24 +11,24 @@
 <div class="mz-l-container">
     <h1 class="mz-pagetitle">{{ labels.orderConfirmation }} </h1>
 
-	<p>{{ labels.confirmationText }}</p>
+  <p>{{ labels.confirmationText }}</p>
 
     <p>{{ labels.yourOrderNumber|string_format(model.orderNumber)|safe }}</p>
 
     <div class="mz-l-stack">
         <div class="mz-l-stack-section">
             <h4 class="mz-l-stack-sectiontitle">{{ labels.payments }}</h4>
-			{% if model.total == 0 %}
-				{% with model.total|currency as total %}
-					<h4 class="mz-confirmation-nopaymentrequired">{{ labels.noPaymentWasRequired|string_format(total) }}</h4>
-				{% endwith %}
-			{% else %}
-				{% for payment in model.payments %}
-				{% if payment.status != "Voided" and payment.status != "Declined" %}
-				{% include "modules/checkout/checkout-payment" with model=payment %}
-				{% endif %}
-				{% endfor %}
-			{% endif %}
+      {% if model.total == 0 %}
+        {% with model.total|currency as total %}
+          <h4 class="mz-confirmation-nopaymentrequired">{{ labels.noPaymentWasRequired|string_format(total) }}</h4>
+        {% endwith %}
+      {% else %}
+        {% for payment in model.payments %}
+        {% if payment.status != "Voided" and payment.status != "Declined" %}
+        {% include "modules/checkout/checkout-payment" with model=payment %}
+        {% endif %}
+        {% endfor %}
+      {% endif %}
         </div>
         {% if model.hasDirectShip %}
         <div class="mz-l-stack-section">
@@ -76,13 +76,10 @@
 {% endblock body-content %}
 
 {% block trailing-scripts %}
-	{% parent %}
-	{% if siteContext.generalSettings.isGoogleAnalyticsEnabled and siteContext.generalSettings.isGoogleAnalyticsEcommerceEnabled %}
-	{% include "modules/analytics/google-analytics-ecommerce-tracking-code" %}
-	{% endif %}
+  {% parent %}
+  {% if siteContext.generalSettings.isGoogleAnalyticsEnabled and siteContext.generalSettings.isGoogleAnalyticsEcommerceEnabled %}
+  {% include "modules/analytics/google-analytics-ecommerce-tracking-code" %}
+  {% endif %}
 
-{% endblock trailing-scripts %}
-
-		
-		
-		
+{% endblock trailing-scripts %
+}
