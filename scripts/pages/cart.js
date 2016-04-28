@@ -1,4 +1,3 @@
-/* globals V: true */
 define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/models-cart', 'modules/cart-monitor', 'hyprlivecontext', 'hyprlive', 'modules/preserve-element-through-render'], function (Backbone, _, $, CartModels, CartMonitor, HyprLiveContext, Hypr, preserveElement) {
     var CartView = Backbone.MozuView.extend({
         templateName: "modules/cart/cart-table",
@@ -96,13 +95,17 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
         var visaCheckoutSettings = HyprLiveContext.locals.siteContext.checkoutSettings.visaCheckout;
         var apiKey = visaCheckoutSettings.apiKey;
         var clientId = visaCheckoutSettings.clientId;
-        
+
         // if this function is being called on init rather than after updating cart total
         if (!model) {
             model = CartModels.Cart.fromCurrent();
             subtotal = model.get('subtotal');
             delay = 0;
 
+            if (!window.V) {
+                //console.warn( 'visa checkout has not been initilized properly');
+                return false;
+            }
             // on success, attach the encoded payment data to the window
             // then turn the cart into an order and advance to checkout
             window.V.on("payment.success", function(payment) {
