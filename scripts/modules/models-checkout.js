@@ -388,6 +388,8 @@ define([
                     self.clear();
                     self.stepStatus('incomplete');
                     self.setDefaultPaymentType(self);
+                    if (currentPayment.paymentType === "PayWithAmazon")
+                         self.trigger('removeAmazonPayment');
                 });
             },
             activePayments: function () {
