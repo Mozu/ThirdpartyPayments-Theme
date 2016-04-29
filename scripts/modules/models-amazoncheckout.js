@@ -76,7 +76,10 @@ define([
                             "email": (user.email !== "" ? user.email : me.get("fulfillmentInfo").fulfillmentContact.email)
                         },
                         "orderId" : me.id,
-                        "isSameBillingShippingAddress" : false
+                        "isSameBillingShippingAddress" : false,
+                        data : {
+                            "awsData" : me.awsData
+                        }
                     },
                     "externalTransactionId" : me.awsData.awsReferenceId
                 };

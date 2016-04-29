@@ -48,7 +48,10 @@
                         <a class="mz-checkout-payment-change" href="javascript:;" data-mz-action="cancelExternalCheckout">{{ labels.removePayment }} </a>
                      {% endif %}
                     {% include "modules/checkout/payment-paybyamazon" with model=payment.billingInfo.billingContact%}  
+                   
                 {%endif%}
+
+
             {%endif%}
         {% endfor %}
 

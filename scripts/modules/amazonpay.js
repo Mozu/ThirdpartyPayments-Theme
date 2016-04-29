@@ -21,6 +21,7 @@ function($,EventBus, Api, hyprlivecontext, _) {
 			this.buttonColor = this.getValue(paymentSettings,"buttonColor") || "Gold";
 			this.buttonType = this.getValue(paymentSettings,"buttonType") || "PwA";
 			this.usePopUp = (this.getValue(paymentSettings, "usepopup") || "true") == "true";
+			this.billingType = this.getValue(paymentSettings, "billingAddressOption") ;
 			var regionMappings = {"de" : "eu", "uk" : "eu", "us" : "na", "jp" : "jp"};
 
 			if (this.sellerId && this.clientId && loadScript) {
@@ -69,7 +70,11 @@ function($,EventBus, Api, hyprlivecontext, _) {
 					useAmazonAddressBook: true,
 					size: (!isCart ? "small" : "medium"),
 					authorization: function() {
-						var loginOptions = {scope: "profile postal_code payments:widget payments:shipping_address", popup: self.usePopUp};
+						var scope = "profile postal_code payments:widget payments:shipping_address";
+						if (self.billingType === "1")
+							scope += " payments:billing_address";
+						
+						var loginOptions = {scope: scope, popup: self.usePopUp};
 						authRequest = window.amazon.Login.authorize (loginOptions,redirectUrl);
 					},
 					onError: function(error) {
