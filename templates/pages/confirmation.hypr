@@ -81,5 +81,4 @@
   {% include "modules/analytics/google-analytics-ecommerce-tracking-code" %}
   {% endif %}
 
-{% endblock trailing-scripts %
-}
+{% endblock trailing-scripts %}
