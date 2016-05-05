@@ -240,14 +240,14 @@ define([
             initialize: function () {
                 var me = this;
                 this.on('change:availableShippingMethods', function (me, value) {
-                    me.updateShippingMethod(me.get('shippingMethodCode'));
+                    me.updateShippingMethod(me.get('shippingMethodCode'), true);
                 });
                 _.defer(function () {
                     // This adds the price and other metadata off the chosen
                     // method to the info object itself.
                     // This can only be called after the order is loaded
                     // because the order data will impact the shipping costs.
-                    me.updateShippingMethod(me.get('shippingMethodCode'));
+                    me.updateShippingMethod(me.get('shippingMethodCode'), true);
                 });
             },
             relations: {
@@ -287,7 +287,7 @@ define([
                 // Payment Info step has been initialized. Complete status hides the Shipping Method's Next button.
                 return this.stepStatus('complete');
             },
-            updateShippingMethod: function (code) {
+            updateShippingMethod: function (code, resetMessage) {
                 var available = this.get('availableShippingMethods'),
                     newMethod = _.findWhere(available, { shippingMethodCode: code }),
                     lowestValue = _.min(available, function(ob) { return ob.price; }); // Returns Infinity if no items in collection.
@@ -297,10 +297,10 @@ define([
                 }
                 if (newMethod) {
                     this.set(newMethod);
-                    this.applyShipping();
+                    this.applyShipping(resetMessage);
                 }
             },
-            applyShipping: function() {
+            applyShipping: function(resetMessage) {
                 if (this.validate()) return false;
                 var me = this;
                 this.isLoading(true);
@@ -317,6 +317,9 @@ define([
                             me.isLoading(false);
                             me.calculateStepStatus();
                             me.parent.get('billingInfo').calculateStepStatus();
+                            if(resetMessage) {
+                                me.parent.messages.reset(me.parent.get('messages'));
+                            }
                         });
                 }
             },
@@ -553,17 +556,19 @@ define([
             },
 
             refreshBillingInfoAfterAddingStoreCredit: function (order, updatedOrder) {
+                var self = this;
                 //clearing existing order billing info because information may have been removed (payment info) #68583
 
                 // #73389 only refresh if the payment requirement has changed after adding a store credit.
                 var activePayments = this.activePayments();
                 var hasNonStoreCreditPayment = (_.filter(activePayments, function (item) { return item.paymentType !== 'StoreCredit'; })).length > 0;
                 if ((order.get('amountRemainingForPayment') >= 0 && !hasNonStoreCreditPayment) ||
-                    (order.get('amountRemainingForPayment') < 0 && hasNonStoreCreditPayment)) {
+                    (order.get('amountRemainingForPayment') < 0 && hasNonStoreCreditPayment)
+                    ) {
                     order.get('billingInfo').clear();
                     order.set(updatedOrder, { silent: true });
                 }
-                this.trigger('orderPayment', updatedOrder, this);
+                self.trigger('orderPayment', updatedOrder, self);
 
             },
 
@@ -629,8 +634,7 @@ define([
                                 
                                 return order.apiAddStoreCredit({
                                     storeCreditCode: creditCode,
-                                    amount: creditAmountToApply,
-                                    email: self.get('billingContact').get('email')
+                                    amount: creditAmountToApply
                                 }).then(function (o) {
                                     self.refreshBillingInfoAfterAddingStoreCredit(order, o.data);
                                     return o;
@@ -1373,7 +1377,7 @@ define([
                             });
                     }];
                 var contactInfoContactName = contactInfo.get(contactName);
-                var customerContacts = this.get('customer').get('contacts');
+                var customerContacts = customer.get('contacts');
                     
                 if (!contactInfoContactName.get('accountId')) {
                     contactInfoContactName.set('accountId', customer.id);
@@ -1441,14 +1445,14 @@ define([
                     isPrimaryAddress = this.isSavingNewCustomer(),
                     billingContact = billingInfo.get('billingContact').toJSON(),
                     card = billingInfo.get('card'),
-                    doSaveCard = function () {
+                    doSaveCard = function() {
                         order.cardsSaved = order.cardsSaved || customer.get('cards').reduce(function(saved, card) {
                             saved[card.id] = true;
                             return saved;
                         }, {});
                         var method = order.cardsSaved[card.get('id') || card.get('paymentServiceCardId')] ? 'updateCard' : 'addCard';
                         card.set('contactId', billingContact.id);
-                        return customer.apiModel[method](card.toJSON()).then(function (card) {
+                        return customer.apiModel[method](card.toJSON()).then(function(card) {
                             order.cardsSaved[card.data.id] = true;
                             return card;
                         });
