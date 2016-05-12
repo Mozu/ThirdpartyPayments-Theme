@@ -1,7 +1,6 @@
-﻿    <h3 class="mz-formstep-header mz-checkoutform-header">
+    <h3 class="mz-formstep-header mz-checkoutform-header">
       {{ labels.shippingInformation }}
-      {% if (model.isAwsCheckout and themeSettings.changePWAShipping) or (not model.isAwsCheckout) %}
-          <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit">{{ labels.change }}</a>
+        <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit" style="display:{% if (model.isShippingEditHidden) %}none{%else%}show{%endif%}"  id="addressEdit">{{ labels.change }}</a>
       {%endif%}
     </h3>
     <div class="mz-formstep-body">
@@ -15,7 +14,7 @@
         {% endif %}
 
         {% if model.requiresFulfillmentInfo %}
-        {% include "modules/common/address-summary" %}
+          {% include "modules/common/address-summary" %}
         {% if model.isAwsCheckout %}
         <div style="margin-top:5px;margin-bottom:20px;">
               <a data-mz-action="amazonShippingAndBilling" href="javascript:;">{{labels.awsChangeAddress}}</a>
@@ -39,7 +38,7 @@
         {% endif %}
       </div>
       {% endif %}
-      
+
       {% if model.requiresDigitalFulfillmentContact %}
       <div class="mz-formstep-fields mz-l-formfieldgroup mz-checkoutform mz-checkoutform-active">
         {% include "modules/checkout/checkout-digital-fulfillment" with editingContact=model %}
@@ -88,4 +87,4 @@
     <div class="mz-formstep-next">
         <button class="mz-button" data-mz-action="next">{{ labels.next }}</button>
     </div>
-    </div>    
+    </div>

@@ -104,6 +104,10 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
             subtotal = model.get('subtotal');
             delay = 0;
 
+            if (!window.V) {
+                //console.warn( 'visa checkout has not been initilized properly');
+                return false;
+            }
             // on success, attach the encoded payment data to the window
             // then turn the cart into an order and advance to checkout
             window.V.on("payment.success", function(payment) {

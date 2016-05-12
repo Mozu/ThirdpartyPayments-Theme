@@ -211,7 +211,7 @@
                     "xtype": "mz-input-text",
                     "name": "defaultSort",
                     "allowBlank": true      ,
-                    "allowOnlyWhitespace":true           
+                    "allowOnlyWhitespace":true
                 }
             ]
         },
@@ -241,12 +241,12 @@
         },
         {
             "xtype": "panel",
-            "title": "Pay With Amazon",
+            "title": "Thridparty payments",
             "collapsed": false,
             "items": [
                 {
                     "xtype": "mz-input-checkbox",
-                    "name": "changePWAShipping",
+                    "name": "changeShipping",
                     "fieldLabel": "Allow Customers to change shipping address"
                 }
             ]

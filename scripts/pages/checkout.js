@@ -263,7 +263,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             var val = $(e.currentTarget).prop('value'),
                 creditCode = $(e.currentTarget).attr('data-mz-credit-code-target');  //target
             if (!creditCode) {
-                console.log('checkout.applyDigitalCredit could not find target.');
+                //console.log('checkout.applyDigitalCredit could not find target.');
                 return;
             }
             var amtToApply = this.stripNonNumericAndParseFloat(val);
@@ -319,24 +319,18 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
             var clientId = visaCheckoutSettings.clientId || 'mozu_test1';
             var orderModel = this.model.getOrder();
 
+
+            if (!window.V) {
+                //console.warn( 'visa checkout has not been initilized properly');
+                return false;
+            }
             // on success, attach the encoded payment data to the window
             // then call the sdk's api method for digital wallets, via models-checkout's helper
             window.V.on("payment.success", function(payment) {
-                console.log({ success: payment });
+                //console.log({ success: payment });
                 me.editing.savedCard = false;
                 me.model.parent.processDigitalWallet('VisaCheckout', payment);
             });
-
-            // for debugging purposes only. don't use this in production
-            window.V.on("payment.cancel", function(payment) {
-                console.log({ cancel: JSON.stringify(payment) });
-            });
-
-            // for debugging purposes only. don't use this in production
-            window.V.on("payment.error", function(payment, error) {
-                console.warn({ error: JSON.stringify(error) });
-            });
-
             window.V.init({
                 apikey: apiKey,
                 clientId: clientId,
