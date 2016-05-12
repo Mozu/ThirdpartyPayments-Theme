@@ -31,6 +31,8 @@
                     {% if model.billingInfo.billingContact.firstName &&  model.billingInfo.billingContact.address.address1 %}
                         <b>{{ labels.billingInformation }}</b>:<br><br>
                         {% include "modules/common/email-address-summary" with model=model.billingInfo.billingContact %}<br><br>
+                    {% endif %}
+                        {% include "modules/common/email-address-summary" with model=model.billingInfo.billingContact %}<br><br>
                     {%endif%}
                     {% if model.billingInfo.paymentType|lower == "paypalexpress2"  %}
                         <b>{{ labels.paymentMethod }}</b>: {{ labels.paypalExpress }}

@@ -1,7 +1,6 @@
     <h3 class="mz-formstep-header mz-checkoutform-header">
       {{ labels.shippingInformation }}
         <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit" style="display:{% if (model.isShippingEditHidden) %}none{%else%}show{%endif%}"  id="addressEdit">{{ labels.change }}</a>
-      {%endif%}
     </h3>
     <div class="mz-formstep-body">
         {% if model.requiresFulfillmentInfo or model.requiresDigitalFulfillmentContact %}
@@ -16,7 +15,7 @@
         {% if model.requiresFulfillmentInfo %}
           {% include "modules/common/address-summary" %}
         {% if model.isAwsCheckout %}
-        <div style="margin-top:5px;margin-bottom:20px;">
+        <div style="margin-top:5px;margin-bottom:20px;"  id="changeAwsAddress">
               <a data-mz-action="amazonShippingAndBilling" href="javascript:;">{{labels.awsChangeAddress}}</a>
             </div>
           {%endif%}    

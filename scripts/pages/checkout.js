@@ -166,6 +166,12 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
                 this.render();
             }, this);
             this.codeEntered = !!this.model.get('digitalCreditCode');
+
+            this.listenTo(this.model, 'removeAmazonPayment', function() {
+                  $("#changeAwsAddress").hide();
+                  $("#addressEdit").show();
+              });
+
         },
         resetPaymentData: function (e) {
             if (e.target !== $('[data-mz-saved-credit-card]')[0]) {

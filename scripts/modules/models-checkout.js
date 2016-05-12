@@ -63,6 +63,11 @@ define([
                 if (activePayments && activePayments.length === 0) return false;
                 return (activePayments && (_.findWhere(activePayments, { paymentType: 'PayWithAmazon' }) || _.findWhere(activePayments, { paymentType: 'PayPalExpress2' })));
             },
+            isShippingEditHidden: function() {
+              if (HyprLiveContext.locals.themeSettings.changeShipping) return false;
+
+              return this.isNonMozuCheckout();
+             },
             isAwsCheckout: function() {
                 var activePayments = this.getOrder().apiModel.getActivePayments();
                 return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });
@@ -396,6 +401,8 @@ define([
                     self.clear();
                     self.stepStatus('incomplete');
                     self.setDefaultPaymentType(self);
+                    if (currentPayment.paymentType === "PayWithAmazon")
+                         self.trigger('removeAmazonPayment');
                 });
             },
             activePayments: function () {
