@@ -72,11 +72,6 @@ define([
                 var activePayments = this.getOrder().apiModel.getActivePayments();
                 return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });
             },
-            isShippingEditHidden: function() {
-              if (HyprLiveContext.locals.themeSettings.changeShipping) return false;
-
-              return this.isNonMozuCheckout();
-             },
             requiresDigitalFulfillmentContact: function () {
                 return this.getOrder().get('requiresDigitalFulfillmentContact');
             },
