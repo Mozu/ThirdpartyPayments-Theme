@@ -12,7 +12,7 @@ define([
     function ($, _, Hypr, Backbone, api, CustomerModels, AddressModels, PaymentMethods, HyprLiveContext) {
 
         var CheckoutStep = Backbone.MozuModel.extend({
-            helpers: ['stepStatus', 'requiresFulfillmentInfo','isAwsCheckout','isNonMozuCheckout',  'requiresDigitalFulfillmentContact'],  //
+            helpers: ['stepStatus', 'requiresFulfillmentInfo','isAwsCheckout','isNonMozuCheckout',  'requiresDigitalFulfillmentContact','isShippingEditHidden'],  //
             // instead of overriding constructor, we are creating
             // a method that only the CheckoutStepView knows to
             // run, so it can run late enough for the parent
@@ -63,6 +63,11 @@ define([
                 if (activePayments && activePayments.length === 0) return false;
                 return (activePayments && (_.findWhere(activePayments, { paymentType: 'PayWithAmazon' })));
             },
+            isShippingEditHidden: function() {
+              if (HyprLiveContext.locals.themeSettings.changeShipping) return false;
+
+              return this.isNonMozuCheckout();
+             },
             isAwsCheckout: function() {
                 var activePayments = this.getOrder().apiModel.getActivePayments();
                 return activePayments && !!_.findWhere(activePayments, { paymentType: 'PayWithAmazon' });

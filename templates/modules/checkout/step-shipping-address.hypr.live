@@ -1,6 +1,6 @@
 ﻿    <h3 class="mz-formstep-header mz-checkoutform-header">
       {{ labels.shippingInformation }}
-       <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit" style="display:{% if (model.isAwsCheckout and themeSettings.changePWAShipping) or (not model.isAwsCheckout) %}show{%else%}none{%endif%}"  id="addressEdit">{{ labels.change }}</a>
+      <a href="javascript:;" class="mz-formstep-edit" data-mz-action="edit" style="display:{% if (model.isShippingEditHidden) %}none{%else%}show{%endif%}"  id="addressEdit">{{ labels.change }}</a>
     </h3>
     <div class="mz-formstep-body">
         {% if model.requiresFulfillmentInfo or model.requiresDigitalFulfillmentContact %}

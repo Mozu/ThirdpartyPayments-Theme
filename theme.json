@@ -11,16 +11,16 @@
     "baseTheme": "https://github.com/mozu/core-theme.git",
     "baseThemeChannel": "edge",
     "baseThemeVersion": {
-      "commit": "f40da0adeca1e98f6f5a6bd39d34461999fb72dd",
+      "commit": "1d0278b9c7b4c1605eed5828f0952186a732f459",
       "version": "HEAD"
     }
   },
   "editors": [
     {
-            "id": "layout",
-            "path": "layout.js"
-        },
-        {
+      "id": "layout",
+      "path": "layout.js"
+    },
+    {
       "documentTypes": [
         "web_page@mozu"
       ],
@@ -396,7 +396,7 @@
     "primaryFont": "Source Sans Pro",
     "fontSize": "14px",
     "gutterWidth": "25px",
-        "internal-themeAddons": [ ],
+    "internal-themeAddons": [],
     "itemListingThumbSize": 80,
     "listProductCode": true,
     "listProductShortDesc": true,
@@ -432,7 +432,7 @@
     "showProductDetailShortDesc": true,
     "showProductDetailUPC": true,
     "textColor": "#444444",
-    "changePWAShipping" : false,
+    "changeShipping": false,
     "usStates": [
       {
         "abbreviation": "AL",
@@ -676,118 +676,112 @@
     "allowCustomerInitiatedReturns": true,
     "visaCheckoutSdkUrl": "https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js"
   },
-    "layoutWidgets": [
+  "layoutWidgets": [
+    {
+      "id": "mz-1-col",
+      "category": "*",
+      "displayName": "1 Column 100",
+      "displayTemplate": "base",
+      "defaultConfig": {
+        "title": "Dropzone",
+        "mz-col1": 100
+      },
+      "customEditor": "layout",
+      "icon": "/resources/admin/widgets/1-col_icon.png",
+      "validPageTypes": [
+        "*"
+      ],
+      "columns": [
         {
-            "id": "mz-1-col",
-            "category": "*",
-            "displayName": "1 Column 100",
-            "displayTemplate": "base",
-            "defaultConfig": {
-                "title": "Dropzone",
-                "mz-col1": 100
-            },
-            "customEditor": "layout",
-            "icon": "/resources/admin/widgets/1-col_icon.png",
-            "validPageTypes": [
-                "*"
-            ],
-            "columns": [
-                {
-                    "width": "100%"
-                }
-            ]
-        },
-        {
-            "id": "mz-2-col",
-            "category": "*",
-            "displayName": "2 Column 50/50",
-            "displayTemplate": "base",
-            "defaultConfig": {
-                "title": "Dropzone",
-                "mz-col1": 50,
-                "mz-col2": 50
-            },
-            "customEditor": "layout",
-            "icon": "/resources/admin/widgets/2-col_icon.png",
-            "validPageTypes": [
-                "*"
-            ],
-            "columns": [
-                {
-                    "width": "50%"
-                },
-                {
-
-                    "width": "50%"
-                }
-            ]
-        },
-        {
-            "id": "mz-3-col",
-            "category": "*",
-            "displayName": "3 Column 33/33/33",
-            "displayTemplate": "base",
-            "defaultConfig": {
-                "title": "Dropzone",
-                "mz-col1": 33.33,
-                "mz-col2": 33.33,
-                "mz-col3": 33.33
-            },
-            "customEditor": "layout",
-            "icon": "/resources/admin/widgets/3-col_icon.png",
-            "validPageTypes": [
-                "*"
-            ],
-            "columns": [
-                {
-                    "width": "33.3%"
-                },
-                {
-
-                    "width": "33.3%"
-                },
-                {
-
-                    "width": "33.3%"
-                }
-            ]
-        },
-        {
-            "id": "mz-4-col",
-            "category": "*",
-            "displayName": "4 Column 25/25/25/25",
-            "displayTemplate": "base",
-            "defaultConfig": {
-                "title": "Dropzone",
-                "mz-col1": 25,
-                "mz-col2": 25,
-                "mz-col3": 25,
-                "mz-col4": 25
-            },
-            "customEditor": "layout",
-            "icon": "/resources/admin/widgets/4-col_icon.png",
-            "validPageTypes": [
-                "*"
-            ],
-            "columns": [
-                {
-                    "width": "25%"
-                },
-                {
-
-                    "width": "25%"
-                },
-                {
-
-                    "width": "25%"
-                },
-                {
-
-                    "width": "25%"
-                }
-            ]
+          "width": "100%"
         }
-    ],
+      ]
+    },
+    {
+      "id": "mz-2-col",
+      "category": "*",
+      "displayName": "2 Column 50/50",
+      "displayTemplate": "base",
+      "defaultConfig": {
+        "title": "Dropzone",
+        "mz-col1": 50,
+        "mz-col2": 50
+      },
+      "customEditor": "layout",
+      "icon": "/resources/admin/widgets/2-col_icon.png",
+      "validPageTypes": [
+        "*"
+      ],
+      "columns": [
+        {
+          "width": "50%"
+        },
+        {
+          "width": "50%"
+        }
+      ]
+    },
+    {
+      "id": "mz-3-col",
+      "category": "*",
+      "displayName": "3 Column 33/33/33",
+      "displayTemplate": "base",
+      "defaultConfig": {
+        "title": "Dropzone",
+        "mz-col1": 33.33,
+        "mz-col2": 33.33,
+        "mz-col3": 33.33
+      },
+      "customEditor": "layout",
+      "icon": "/resources/admin/widgets/3-col_icon.png",
+      "validPageTypes": [
+        "*"
+      ],
+      "columns": [
+        {
+          "width": "33.3%"
+        },
+        {
+          "width": "33.3%"
+        },
+        {
+          "width": "33.3%"
+        }
+      ]
+    },
+    {
+      "id": "mz-4-col",
+      "category": "*",
+      "displayName": "4 Column 25/25/25/25",
+      "displayTemplate": "base",
+      "defaultConfig": {
+        "title": "Dropzone",
+        "mz-col1": 25,
+        "mz-col2": 25,
+        "mz-col3": 25,
+        "mz-col4": 25
+      },
+      "customEditor": "layout",
+      "icon": "/resources/admin/widgets/4-col_icon.png",
+      "validPageTypes": [
+        "*"
+      ],
+      "columns": [
+        {
+          "width": "25%"
+        },
+        {
+          "width": "25%"
+        },
+        {
+          "width": "25%"
+        },
+        {
+          "width": "25%"
+        }
+      ]
+    }
+  ],
   "widgets": [
     {
       "defaultConfig": {
