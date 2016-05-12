@@ -211,7 +211,7 @@
                     "xtype": "mz-input-text",
                     "name": "defaultSort",
                     "allowBlank": true      ,
-                    "allowOnlyWhitespace":true           
+                    "allowOnlyWhitespace":true
                 }
             ]
         },
@@ -236,6 +236,18 @@
                     "allowDecimal": false,
                     "minValue": 4,
                     "allowBlank": false
+                }
+            ]
+        },
+        {
+            "xtype": "panel",
+            "title": "Thridparty payments",
+            "collapsed": false,
+            "items": [
+                {
+                    "xtype": "mz-input-checkbox",
+                    "name": "changeShipping",
+                    "fieldLabel": "Allow Customers to change shipping address"
                 }
             ]
         }

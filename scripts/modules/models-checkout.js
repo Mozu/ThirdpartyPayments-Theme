@@ -1,4 +1,4 @@
-﻿define([
+define([
     'modules/jquery-mozu',
     'underscore',
     'hyprlive',
@@ -12,7 +12,7 @@
     function ($, _, Hypr, Backbone, api, CustomerModels, AddressModels, PaymentMethods, HyprLiveContext) {
 
         var CheckoutStep = Backbone.MozuModel.extend({
-            helpers: ['stepStatus', 'requiresFulfillmentInfo','isNonMozuCheckout', 'requiresDigitalFulfillmentContact'],
+            helpers: ['stepStatus', 'requiresFulfillmentInfo','isNonMozuCheckout', 'requiresDigitalFulfillmentContact', 'isShippingEditHidden'],
             // instead of overriding constructor, we are creating
             // a method that only the CheckoutStepView knows to
             // run, so it can run late enough for the parent
@@ -63,6 +63,11 @@
                 if (activePayments && activePayments.length === 0) return false;
                 return (activePayments && (_.findWhere(activePayments, { paymentType: 'PayPalExpress2' })));
             },
+            isShippingEditHidden: function() {
+              if (HyprLiveContext.locals.themeSettings.changeShipping) return false;
+
+              return this.isNonMozuCheckout();
+             },
             requiresDigitalFulfillmentContact: function () {
                 return this.getOrder().get('requiresDigitalFulfillmentContact');
             },
@@ -81,7 +86,7 @@
                 'email': {
                     pattern: 'email',
                     msg: Hypr.getLabel('emailMissing')
-                } 
+                }
             },
             dataTypes: {
                 contactId: function(val) {
@@ -158,7 +163,7 @@
 
                 var validationObj = this.validate();
 
-                if (validationObj) { 
+                if (validationObj) {
                     Object.keys(validationObj).forEach(function(key){
                         this.trigger('error', {message: validationObj[key]});
                     }, this);
@@ -189,7 +194,7 @@
                         parent.isLoading(false);
                         me.calculateStepStatus();
                         parent.calculateStepStatus();
-                    });                  
+                    });
                 };
 
                 var promptValidatedAddress = function () {
@@ -461,7 +466,7 @@
                         this.set('creditAmountToApply', this.maxCreditAmountToApply());
                     }
                 }
-            },            
+            },
             closeApplyCredit: function () {
                 delete this._applyingCredit;
                 this.unset('selectedCredit');
@@ -497,7 +502,7 @@
                     var currentDate = new Date(),
                         unexpiredDate = new Date(2076, 6, 4);
 
-                    // todo: refactor so conversion & get can re-use - Greg Murray on 2014-07-01 
+                    // todo: refactor so conversion & get can re-use - Greg Murray on 2014-07-01
                     var invalidCredits = customerCredits.filter(function(cred) {
                         var credBalance = cred.get('currentBalance'),
                             credExpDate = cred.get('expirationDate');
@@ -543,7 +548,7 @@
             },
 
             availableDigitalCredits: function () {
-                if (! this._cachedDigitalCredits) { 
+                if (! this._cachedDigitalCredits) {
                     this.loadCustomerDigitalCredits();
                 }
                 return this._cachedDigitalCredits && this._cachedDigitalCredits.length > 0 && this._cachedDigitalCredits;
@@ -586,7 +591,7 @@
                 if (!creditAmountToApply && creditAmountToApply !== 0) {
                     creditAmountToApply = self.getMaxCreditToApply(digitalCredit, self);
                 }
-                
+
                 digitalCredit.set('creditAmountApplied', creditAmountToApply);
                 digitalCredit.set('remainingBalance',  digitalCredit.calculateRemainingBalance());
                 digitalCredit.set('isEnabled', isEnabled);
@@ -625,7 +630,7 @@
                             }
                             return order.apiVoidPayment(sameCreditPayment.id).then(function (o) {
                                 order.set(o.data);
-                                
+
                                 return order.apiAddStoreCredit({
                                     storeCreditCode: creditCode,
                                     amount: creditAmountToApply
@@ -670,8 +675,8 @@
             },
 
             areNumbersEqual: function(f1, f2) {
-                var epsilon = 0.01; 
-                return (Math.abs(f1 - f2)) < epsilon; 
+                var epsilon = 0.01;
+                return (Math.abs(f1 - f2)) < epsilon;
             },
 
             retrieveDigitalCredit: function (customer, creditCode, me, amountRequested) {
@@ -700,7 +705,7 @@
                     if (validate !== null) {
                         return null;
                     }
-                    
+
                     var maxAmt = me.getMaxCreditToApply(creditModel, me, amountRequested);
                     if (!!amountRequested && amountRequested < maxAmt) {
                         maxAmt = amountRequested;
@@ -878,11 +883,11 @@
                 this._cachedDigitalCredits = null;
 
                 _.bindAll(this, 'applyPayment', 'markComplete');
-            }, 
+            },
             selectPaymentType: function(me, newPaymentType) {
                 if ((!me.changed || !me.changed.paymentWorkflow) && !me.get('paymentWorkflow')) {
                     me.set('paymentWorkflow', 'Mozu');
-                } 
+                }
                 me.get('check').selected = newPaymentType === 'Check';
                 me.get('card').selected = newPaymentType === 'CreditCard';
             },
@@ -899,7 +904,7 @@
                     paymentTypeIsCard = activePayments && !!_.findWhere(activePayments, { paymentType: 'CreditCard' }),
                     paymentTypeIsPayPalNew = activePayments && !!_.findWhere(activePayments, { paymentType: 'PayPalExpress2' }),
                     balanceNotPositive = this.parent.get('amountRemainingForPayment') <= 0;
-                 
+
                 if (this.isNonMozuCheckout()) return this.stepStatus("complete");
                 if (paymentTypeIsCard && !Hypr.getThemeSetting('isCvvSuppressed')) return this.stepStatus('incomplete'); // initial state for CVV entry
 
@@ -920,7 +925,7 @@
                             'lastNameOrSurname',
                             'phoneNumbers'),
                         {
-                            address: obj.billingContact.address ? _.pick(obj.billingContact.address, 
+                            address: obj.billingContact.address ? _.pick(obj.billingContact.address,
                                 'address1',
                                 'address2',
                                 'addressType',
@@ -950,11 +955,11 @@
                 if (payment.paymentWorkflow === 'VisaCheckout') {
                     normalizedLiveBillingInfo.billingContact.address.addressType = normalizedSavedPaymentInfo.billingContact.address.addressType;
                 }
-                
+
                 return !_.isEqual(normalizedSavedPaymentInfo, normalizedLiveBillingInfo);
             },
             submit: function () {
-                
+
                 var order = this.getOrder();
                 // just can't sync these emails right
                 order.syncBillingAndCustomerEmail();
@@ -1041,9 +1046,9 @@
                 this.isLoading(false);
                 var order = this.getOrder();
                 _.defer(function() {
-                    order.isReady(true);    
+                    order.isReady(true);
                 });
-                
+
             },
             toJSON: function(options) {
                 var j = CheckoutStep.prototype.toJSON.apply(this, arguments), loggedInEmail;
@@ -1200,7 +1205,7 @@
             },
             updateShippingInfo: function() {
                 var me = this;
-                this.apiModel.getShippingMethods().then(function (methods) { 
+                this.apiModel.getShippingMethods().then(function (methods) {
                     me.get('fulfillmentInfo').refreshShippingMethods(methods);
                 });
             },
@@ -1275,25 +1280,25 @@
                     errorHandled = false;
 
                 order.isLoading(false);
-                
+
                 if (!error || !error.items || error.items.length === 0) {
-                    
+
                     if (error.message.indexOf('10486') != -1){
-                        
+
                         var siteContext = HyprLiveContext.locals.siteContext,
                             externalPayment = _.findWhere(siteContext.checkoutSettings.externalPaymentWorkflowSettings, {"name" : "PayPalExpress2"}),
                             environment = _.findWhere(externalPayment.credentials, {"apiName" : "environment"}),
                             url = "";
-                            
+
                         if (environment.value.toLowerCase() === "sandbox"){
-                            url = "https://www.sandbox.paypal.com";    
+                            url = "https://www.sandbox.paypal.com";
                         }
                         else{
                             url = "https://www.paypal.com";
                         }
-                        
-                        window.location.href = url + "/cgi-bin/webscr?cmd=_express-checkout&token=" + order.get('payments')[order.get('payments').length-1].externalTransactionId; 
-                        
+
+                        window.location.href = url + "/cgi-bin/webscr?cmd=_express-checkout&token=" + order.get('payments')[order.get('payments').length-1].externalTransactionId;
+
                         return;
                     }
                     else {
@@ -1379,7 +1384,7 @@
                 var customer = this.get('customer'),
                     contactInfo = this.get(infoName),
                     process = [function () {
-                      
+
                         // Update contact if a valid contact ID exists
                         if (orderContact.id && orderContact.id > 0) {
                             return customer.apiModel.updateContact(orderContact);
@@ -1395,7 +1400,7 @@
                     }];
                 var contactInfoContactName = contactInfo.get(contactName);
                 var customerContacts = customer.get('contacts');
-                    
+
                 if (!contactInfoContactName.get('accountId')) {
                     contactInfoContactName.set('accountId', customer.id);
                 }
@@ -1444,13 +1449,13 @@
             isContactModified: function(orderContact, customerContact) {
                 var validContact = orderContact && customerContact && orderContact.id === customerContact.id;
                 var addressChanged = validContact && !_.isEqual(orderContact.address, customerContact.address);
-                //Note: Only home phone is used on the checkout page     
+                //Note: Only home phone is used on the checkout page
                 var phoneChanged = validContact && orderContact.phoneNumbers.home &&
                                     (!customerContact.phoneNumbers.home || orderContact.phoneNumbers.home !== customerContact.phoneNumbers.home);
 
                 //Check whether any of the fields available in the contact UI on checkout page is modified
                 return validContact &&
-                    (addressChanged || phoneChanged || 
+                    (addressChanged || phoneChanged ||
                     orderContact.email !== customerContact.email || orderContact.firstName !== customerContact.firstName ||
                     orderContact.lastNameOrSurname !== customerContact.lastNameOrSurname);
             },
@@ -1543,7 +1548,7 @@
                             shopperNotes: order.get('shopperNotes').toJSON()
                         });
                     }];
-                    
+
                     if (this.isNonMozuCheckout()) {
                         billingContact.set("address", null);
                     }
@@ -1570,7 +1575,7 @@
                 this.isLoading(true);
 
                 if (isSavingNewCustomer) {
-                    process.unshift(this.addNewCustomer); 
+                    process.unshift(this.addNewCustomer);
                 }
 
                 var activePayments = this.apiModel.getActivePayments();
@@ -1602,9 +1607,9 @@
                         process.push(this.addShippingContact);
                     }
                 }
-               
+
                 process.push(/*this.finalPaymentReconcile, */this.apiCheckout);
-                
+
                 api.steps(process).then(this.onCheckoutSuccess, this.onCheckoutError);
 
             },

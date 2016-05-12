@@ -11,7 +11,7 @@
     "baseTheme": "https://github.com/mozu/core-theme.git",
     "baseThemeChannel": "edge",
     "baseThemeVersion": {
-      "commit": "f083342c6ab366b29376c1242aa1fc1eb4fd0faf",
+      "commit": "1d0278b9c7b4c1605eed5828f0952186a732f459",
       "version": "HEAD"
     }
   },
@@ -432,6 +432,7 @@
     "showProductDetailShortDesc": true,
     "showProductDetailUPC": true,
     "textColor": "#444444",
+    "changeShipping": false,
     "usStates": [
       {
         "abbreviation": "AL",
