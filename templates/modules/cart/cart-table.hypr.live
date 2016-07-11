@@ -108,12 +108,12 @@
     <td colspan="4">
       <div class="mz-carttable-checkout-couponcode" id="coupon-code-field" >
         {% include "modules/common/coupon-code-field" %}
-      </div>   
+      </div>
       {% if not model.isEmpty %}<a class="mz-carttable-emptylink" href="javascript:;" data-mz-action="empty">{{ labels.emptyCart }}</a>{% endif %}
       <button id="cart-checkout" class="mz-button mz-button-large mz-carttable-button-active"  {% if model.isEmpty %} disabled="disabled" {% endif %} data-mz-action="proceedToCheckout">{{ labels.proceedToCheckout }}</button>
 
       {% if not model.isEmpty %}
-        {% with siteContext.checkoutSettings.externalPaymentWorkflowSettings|findwhere("isEnabled", true) as externalPaymentWorkflowsEnabled %} 
+        {% with siteContext.checkoutSettings.externalPaymentWorkflowSettings|findwhere("isEnabled", true) as externalPaymentWorkflowsEnabled %}
           {% if externalPaymentWorkflowsEnabled %}
             <div>
               <p>{{labels.orWith}}</p>
@@ -126,11 +126,11 @@
                     {% if externalPayment.name == "VisaCheckout" %}
                       <img alt="Visa Checkout" class="v-button" role="button" src="{{pageContext.visaCheckoutButtonUrl}}"/>
                     {%endif%}
-                     {% if externalPayment.name == "PayPalExpress2" %}                        
-                       <img id="btn_xpressPaypal" class="p-button" alt="Check out with PayPal" role="button" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png" width="170px" height="32px" />
-                      {% require_script "modules/xpressPaypal" %}
-                    {% endif %}  
-                  </div>  
+                     {% if externalPayment.name == "PayPalExpress2" %}
+                      <img id="btn_xpressPaypal" class="p-button" alt="Check out with PayPal" role="button" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png" width="170px" height="32px" />
+
+                    {% endif %}
+                  </div>
                   {%endif%}
               {%endfor%}
             </div>

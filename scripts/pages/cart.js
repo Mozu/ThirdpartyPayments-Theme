@@ -1,4 +1,4 @@
-define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/models-cart', 'modules/cart-monitor', 'hyprlivecontext', 'hyprlive', 'modules/preserve-element-through-render','modules/amazonPay'], function (Backbone, _, $, CartModels, CartMonitor, HyprLiveContext, Hypr, preserveElement, AmazonPay) {
+define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/models-cart', 'modules/cart-monitor', 'hyprlivecontext', 'hyprlive', 'modules/preserve-element-through-render','modules/amazonPay', 'modules/xpressPaypal'], function (Backbone, _, $, CartModels, CartMonitor, HyprLiveContext, Hypr, preserveElement, AmazonPay, paypal) {
     var CartView = Backbone.MozuView.extend({
         templateName: "modules/cart/cart-table",
         initialize: function () {
@@ -123,14 +123,14 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
             window.V.on("payment.success", function(payment) {
                 // payment here is an object, not a string. we'll stringify it later
                 var $form = $('#cartform');
-                
+
                 _.each({
 
                     digitalWalletData: JSON.stringify(payment),
                     digitalWalletType: "VisaCheckout"
 
                 }, function(value, key) {
-                    
+
                     $form.append($('<input />', {
                         type: 'hidden',
                         name: key,
@@ -191,9 +191,12 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
         window.cartView = cartViews;
 
         CartMonitor.setCount(cartModel.count());
+
+        paypal.loadScript();
         
         if (AmazonPay.isEnabled && cartModel.count() > 0)
             AmazonPay.addCheckoutButton(cartModel.id, true);
+        
     });
 
 });

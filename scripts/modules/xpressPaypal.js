@@ -1,28 +1,30 @@
 define(['modules/jquery-mozu',
         "modules/api",
-        'modules/models-cart', 
+        'modules/models-cart',
         'hyprlivecontext',
         'underscore'],
-function($, Api, CartModels, hyprlivecontext, _, paypal) {
+function($, Api, CartModels, hyprlivecontext, _) {
 
     window.paypalCheckoutReady = function() {
-     
+
       var siteContext = hyprlivecontext.locals.siteContext,
           externalPayment = _.findWhere(siteContext.checkoutSettings.externalPaymentWorkflowSettings, {"name" : "PayPalExpress2"}),
           merchantAccountId = _.findWhere(externalPayment.credentials, {"apiName" : "merchantAccountId"}),
           environment = _.findWhere(externalPayment.credentials, {"apiName" : "environment"}),
-          id = CartModels.Cart.fromCurrent().id,
+          id = CartModels.Cart.fromCurrent().id || window.order.id,
           isCart = window.location.href.indexOf("cart") > 0;
-      
+
         window.paypal.checkout.setup(merchantAccountId.value, {
             environment: environment.value,
             click: function(event) {
                 event.preventDefault();
-
+                var url = "../paypal/token?id=" + id + (!document.URL.split('?')[1] ? "": "&" + document.URL.split('?')[1].replace("id="+id,"").replace("&&", "&"));
+                if (isCart)
+                  url += "&isCart="+ isCart;
                 window.paypal.checkout.initXO();
-                $.ajax({                                          
-                    url: "../paypal/token?id=" + id + "&isCart="+ isCart + (!document.URL.split('?')[1] ? "": "&" + document.URL.split('?')[1].replace("id="+id,"").replace("&&", "&")),
-                    type: "GET",   
+                $.ajax({
+                    url: url,
+                    type: "GET",
                     async: true,
 
                     //Load the minibrowser with the redirection url in the success handler
@@ -41,11 +43,19 @@ function($, Api, CartModels, hyprlivecontext, _, paypal) {
             button: ['btn_xpressPaypal']
         });
     };
-    
-    $.getScript("//www.paypalobjects.com/api/checkout.js").done(function(scrit, textStatus){
-      //console.log(textStatus);
-    }).fail(function(jqxhr, settings, exception) {
-      console.log(jqxhr);
-    });
+    var paypal = {
+      scriptLoaded: false,
+     loadScript: function() {
+      var self = this;
+       if (this.scriptLoaded) return;
+        this.scriptLoaded = true;
+      $.getScript("//www.paypalobjects.com/api/checkout.js").done(function(scrit, textStatus){
+        //console.log(textStatus);
 
+      }).fail(function(jqxhr, settings, exception) {
+        console.log(jqxhr);
+      });
+    }
+   };
+   return paypal;
 });
