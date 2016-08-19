@@ -18,6 +18,7 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
             AmazonPay.init(CartModels.Cart.fromCurrent().id);
 
             AmazonPay.init(true);
+            this.listenTo(this.model.get('items'), 'quantityupdatefailed', this.onQuantityUpdateFailed, this);
 
             var visaCheckoutSettings = HyprLiveContext.locals.siteContext.checkoutSettings.visaCheckout;
             var pageContext = require.mozuData('pagecontext');
@@ -42,6 +43,15 @@ define(['modules/backbone-mozu', 'underscore', 'modules/jquery-mozu', 'modules/m
                 item.saveQuantity();
             }
         },400),
+        onQuantityUpdateFailed: function(model, oldQuantity) {
+            var field = this.$('[data-mz-cart-item=' + model.get('id') + ']');
+            if (field) {
+                field.val(oldQuantity);
+            }
+            else {
+                this.render();
+            }
+        },
         removeItem: function(e) {
             if(require.mozuData('pagecontext').isEditMode) {
                 // 65954
