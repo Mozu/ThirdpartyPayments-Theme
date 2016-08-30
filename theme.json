@@ -9,7 +9,7 @@
     "name": "ThirdParty Payments 9.4.1",
     "allowProduction": true,
     "baseThemeVersion": {
-      "commit": "709e3d3229dd20b9ed8faec161cb33752ed9d27d"
+      "commit": "0930d932752c36f8f3a3b113dc432062f8bb5887"
     }
   },
   "editors": [
