@@ -16,6 +16,7 @@ The PayPal Express Integration adds the following files:
 And edits the following files:
 * `scripts/modules/models-checkout.js`
 * `scripts/pages/checkout.js`
+* `scripts/pages/cart.js`
 * `stylesheets/modules/common/form-step.less`
 * `templates/back-office/packing-slip.hypr`
 * `templates/email/order-confirmation.hypr`

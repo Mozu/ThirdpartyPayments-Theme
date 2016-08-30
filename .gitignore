@@ -5,3 +5,5 @@ mozu.config.json
 mozu.config
 compiled/**
 scripts/vendor/**
+# WebStorm project files
+.idea/
