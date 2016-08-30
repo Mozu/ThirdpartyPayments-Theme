@@ -1,13 +1,16 @@
 {
   "about": {
-        "author": "Mozu",
+    "author": "Mozu",
     "defaultLanguage": "en-US",
     "extends": null,
     "isDesktop": true,
     "isMobile": false,
     "isTablet": false,
     "name": "ThirdParty Payments 9.4.1",
-    "allowProduction": true
+    "allowProduction": true,
+    "baseThemeVersion": {
+      "commit": "709e3d3229dd20b9ed8faec161cb33752ed9d27d"
+    }
   },
   "editors": [
     {
@@ -352,13 +355,13 @@
       "template": "forgot-password",
       "title": "Forgot Password",
       "userCreatable": false
-        },
-        {
-            "entityType": "orderStatus",
-            "id": "orderStatus",
-            "template": "order-status",
-            "title": "Order Status",
-            "userCreatable": false
+    },
+    {
+      "entityType": "orderStatus",
+      "id": "orderStatus",
+      "template": "order-status",
+      "title": "Order Status",
+      "userCreatable": false
     }
   ],
   "settings": {
@@ -401,7 +404,7 @@
     "itemListingThumbSize": 80,
     "listProductCode": true,
     "listProductShortDesc": true,
-        "listVolumePricing": false,
+    "listVolumePricing": false,
     "listProductThumbSize": 160,
     "maxProductImageThumbnailSize": 50,
     "maxProductSummaryWords": 40,

@@ -15,7 +15,7 @@ node_modules/
 /compiled/
 .yo-rc.json
 mozu.config.json
-
+compiled/**
+scripts/vendor/**
 # WebStorm project files
 .idea/
-
