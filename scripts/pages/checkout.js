@@ -107,7 +107,7 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
     });
 
     var poCustomFields = function() {
-        
+
         var fieldDefs = [];
 
         var isEnabled = HyprLiveContext.locals.siteContext.checkoutSettings.purchaseOrder &&
@@ -210,7 +210,8 @@ require(["modules/jquery-mozu", "underscore", "hyprlive", "modules/backbone-mozu
                 require([pageContext.visaCheckoutJavaScriptSdkUrl]);
                 this.visaCheckoutInitialized = true;
             }
-            paypal.loadScript();
+            if (this.$(".p-button").length > 0)
+              paypal.loadScript();
         },
         updateAcceptsMarketing: function(e) {
             this.model.getOrder().set('acceptsMarketing', $(e.currentTarget).prop('checked'));
